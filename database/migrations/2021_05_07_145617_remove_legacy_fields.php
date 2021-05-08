@@ -10,8 +10,8 @@ class RemoveLegacyFields extends Migration
     /**
      * Helper function to migrate old fields to new format
      */
-    private function updateToNewFormat(Array $user, Array $current_properties, String $old_value, String $new_value){
-        if (isset($user[$old_value]) && strlen($user[$old_value]) > 0 && !isset($current_properties[$new_value])) DB::table('user_properties')->insert(['user_id' => $user['id'], 'field_id' => $new_value, 'value' => $user[$old_value]]);
+    private function updateToNewFormat(stdClass $user, Array $current_properties, String $old_value, String $new_value){
+        if (isset($user->$old_value) && strlen($user->$old_value) > 0 && !isset($current_properties[$new_value])) DB::table('user_properties')->insert(['user_id' => $user->id, 'field_id' => $new_value, 'value' => $user->$old_value]);
     }
 
     /**
@@ -37,15 +37,19 @@ class RemoveLegacyFields extends Migration
         $fields->insert(['id' => 'accounts.riot.valorant', 'name' => 'Valorant User ID', 'editable' => true]);
         $fields->insert(['id' => 'accounts.tencent.pubg_mobile', 'name' => 'PUBG Mobile User ID', 'editable' => true]);
         $fields->insert(['id' => 'accounts.valve.dota2', 'name' => 'DOTA 2 User ID', 'editable' => true]);
-        $fields->insert(['id' => 'binusian.community_service_hours', 'name' => 'Current BINUSIAN Community Service Hours', 'editable' => false]);
-        $fields->insert(['id' => 'binusian.regional', 'name' => 'BINUSIAN Regional / Campus Location', 'editable' => false]);
-        $fields->insert(['id' => 'binusian.sat', 'name' => 'Current BINUSIAN SAT points', 'editable' => false]);
-        $fields->insert(['id' => 'binusian.scu', 'name' => 'Current BINUSIAN SCU/IPK', 'editable' => false]);
-        $fields->insert(['id' => 'binusian.sdc.training.basic.om', 'name' => 'LKMM PRIME/"Optimizing Me" training date', 'editable' => false]);
-        $fields->insert(['id' => 'binusian.sdc.training.basic.taoc', 'name' => 'LKMM COMMET/"The Art of Communication" training date', 'editable' => false]);
-        $fields->insert(['id' => 'binusian.sdc.training.intermediate', 'name' => 'LKMM Intermediate" training date', 'editable' => false]);
-        $fields->insert(['id' => 'binusian.sdc.training.advanced', 'name' => 'LKMM Advanced" training date', 'editable' => false]);
-        $fields->insert(['id' => 'binusian.year', 'name' => 'BINUSIAN Year', 'editable' => false]);
+        try {
+            $fields->insert(['id' => 'binusian.community_service_hours', 'name' => 'Current BINUSIAN Community Service Hours', 'editable' => false]);
+            $fields->insert(['id' => 'binusian.regional', 'name' => 'BINUSIAN Regional / Campus Location', 'editable' => false]);
+            $fields->insert(['id' => 'binusian.sat', 'name' => 'Current BINUSIAN SAT points', 'editable' => false]);
+            $fields->insert(['id' => 'binusian.scu', 'name' => 'Current BINUSIAN SCU/IPK', 'editable' => false]);
+            $fields->insert(['id' => 'binusian.sdc.training.basic.om', 'name' => 'LKMM PRIME/"Optimizing Me" training date', 'editable' => false]);
+            $fields->insert(['id' => 'binusian.sdc.training.basic.taoc', 'name' => 'LKMM COMMET/"The Art of Communication" training date', 'editable' => false]);
+            $fields->insert(['id' => 'binusian.sdc.training.intermediate', 'name' => 'LKMM Intermediate" training date', 'editable' => false]);
+            $fields->insert(['id' => 'binusian.sdc.training.advanced', 'name' => 'LKMM Advanced" training date', 'editable' => false]);
+            $fields->insert(['id' => 'binusian.year', 'name' => 'BINUSIAN Year', 'editable' => false]);
+        } catch (Illuminate\Database\QueryException $e){
+            printf("BINUSIAN-related fields already exists!\n");
+        }
         $fields->insert(['id' => 'contacts.phone', 'name' => 'Phone Number', 'editable' => true]);
         $fields->insert(['id' => 'contacts.instagram', 'name' => 'Instagram registered username', 'editable' => true]);
         $fields->insert(['id' => 'contacts.line', 'name' => 'LINE registered phone number or ID', 'editable' => true]);
@@ -59,14 +63,14 @@ class RemoveLegacyFields extends Migration
         $query = DB::table('users')->select(['id', 'binusian', 'nim', 'phone', 'line', 'whatsapp', 'id_mobile_legends', 'id_pubg_mobile', 'id_valorant', 'major'])->get();
         foreach ($query as $user){
             // Get current user properties and map them into a new array
-            $query2 = DB::table('user_properties')->where('user_id', $user['id'])->get();
+            $query2 = DB::table('user_properties')->where('user_id', $user->id)->get();
             $current_properties = [];
             for ($i = 0; $i < count($query2); $i++){
                 $current_properties[$query2[$i]['field_id']] = $query2[$i]['value'];
             }
 
             // Automatically update new fields which was not set before
-            if (isset($user['binusian']) && $user['binusian'] == true && !isset($current_properties['binusian.year'])) DB::table('user_properties')->insert(['user_id' => $user['id'], 'field_id' => 'binusian.year', 'value' => '20' . substr($user['nim'], 0, 2)]);
+            if (isset($user->binusian) && $user->binusian == true && !isset($current_properties['binusian.year'])) DB::table('user_properties')->insert(['user_id' => $user->id, 'field_id' => 'binusian.year', 'value' => '20' . substr($user['nim'], 0, 2)]);
 
             $this->updateToNewFormat($user, $current_properties, 'major', 'university.major');
             $this->updateToNewFormat($user, $current_properties, 'nim', 'university.nim');
@@ -108,50 +112,49 @@ class RemoveLegacyFields extends Migration
         $user_properties = DB::table('user_properties');
         $query = $user_properties->get();
         foreach ($query as $property){
-            $user = DB::table('users')->where('id', $property['user_id']);
-            switch ($property['property_id']){
+            $user = DB::table('users')->where('id', $property->user_id);
+            switch ($property->field_id){
                 case 'university.major':
-                    $user->update(['major' => $property['value']]);
+                    $user->update(['major' => $property->value]);
                     break;
                 case 'university.nim':
-                    $user->update(['nim' => $property['value']]);
+                    $user->update(['nim' => $property->value]);
                     break;
                 case 'contacts.phone':
-                    $user->update(['phone' => $property['value']]);
+                    $user->update(['phone' => $property->value]);
                     break;
                 case 'contacts.line':
-                    $user->update(['line' => $property['line']]);
+                    $user->update(['line' => $property->value]);
                     break;
                 case 'contacts.whatsapp':
-                    $user->update(['whatsapp' => $property['value']]);
+                    $user->update(['whatsapp' => $property->value]);
                     break;
                 case 'accounts.moonton.mobile_legends':
-                    $user->update(['id_mobile_legends' => $property['value']]);
+                    $user->update(['id_mobile_legends' => $property->value]);
                     break;
                 case 'accounts.riot.valorant':
-                    $user->update(['id_valorant' => $property['value']]);
+                    $user->update(['id_valorant' => $property->value]);
                     break;
                 case 'accounts.tencent.pubg_mobile':
-                    $user->update(['id_pubg_mobile' => $property['value']]);
+                    $user->update(['id_pubg_mobile' => $property->value]);
                     break;
                 default: continue 2;
 
-                // Remove this record, so updates from the older version of the database can be migrated properly
-                $user_properties->where('user_id', $property['user_id'])->where('property_id', $property['property_id'])->delete();
+            // Remove this record, so updates from the older version of the database can be migrated properly
+            $user_properties->where('user_id', $property->user_id)->where('field_id', $property->property_id)->delete();
             }
         }
 
         // Query all users to check their BINUSIAN status
         $query = DB::table('users')->get();
         foreach ($query as $user){
-            if ($user['university_id'] > 1 && $user['university_id'] <= 4) DB::table('users')->where('id', $user['id'])->update(['binusian' => true]);
+            if ($user->university_id > 1 && $user->university_id <= 4) DB::table('users')->where('id', $user->id)->update(['binusian' => true]);
         }
 
         // Remove field definitions
         // Add items to 'fields' table
         $this->removeFields([
             'accounts.moonton.mobile_legends', 'accounts.riot.valorant', 'accounts.tencent.pubg_mobile', 'accounts.valve.dota2',
-            'binusian.community_service_hours', 'binusian.regional', 'binusian.sat', 'binusian.scu', 'binusian.sdc.training.basic.om', 'binusian.sdc.training.basic.taoc', 'binusian.sdc.training.intermediate', 'binusian.sdc.training.advanced', 'binusian.year',
             'contacts.phone', 'contacts.instagram', 'contacts.line', 'contacts.telegram', 'contacts.twitter', 'contacts.whatsapp',
             'university.nim', 'university.major'
         ]);
