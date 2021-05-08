@@ -6,3 +6,87 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+// Bootstrap Icons
+@import "~bootstrap-icons/font/bootstrap-icons.css";
+
+// Jumbotron shim for Bootstrap 5 upgrade
+.jumbotron {
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+    background-color: #e9ecef;
+    border-radius: .3rem;
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    font-weight: 900;
+}
+.btn {
+    font-weight: 600;
+}
+.btn-toolbar .btn-group {
+    margin-right: .5rem;
+}
+.btn-toolbar .btn-group:last-child {
+    margin-right: 0;
+}
+.ua-android {
+    --bs-gutter-x: 1.5rem;
+}
+.ua-android .btn {
+    border-radius: 50rem;
+    padding: .375rem 1.5rem;
+}
+.ua-ios {
+    --bs-gutter-x: 1.25rem;
+}
+.ua-ios .btn {
+    border-radius: 5px;
+}
+.card {
+    border-radius: 15px;
+    box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.3);
+}
+.card-img-top {
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+.card-img-left {
+    height: 160px;
+    width: 160px;
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+}
+.ua-android .font-clock {
+    font-family:
+    /* Samsung */
+    /* NOTE: There is an unused font "Clock2017R" */
+    "SamsungOneUINum-500", Clock2016,
+    /* Xiaomi */
+    MILanProVF, "MI Lan Pro VF", MILanPro, "MI Lan Pro",
+    /* Huawei */
+    "HW-digit-Regular", "HW-digit",
+    /* Others */
+    Roboto, sans-serif;
+}
+
+.bd-content {
+    grid-area:content;
+    min-width:1px
+}
+
+@media (max-width: 767.98px) {
+    .bd-sidebar {
+    margin:0 -.75rem 1rem
+    }
+}
+.bd-sidebar {
+    grid-area:sidebar
+}
+
+.card-container .card {
+    margin-bottom: 20px;
+}
+.card-container .card:last-child {
+    margin-bottom: 0;
+}
