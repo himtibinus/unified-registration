@@ -28,8 +28,13 @@ class RemoveLegacyFields extends Migration
      */
     public function up()
     {
-        // Remove unused 'category' on 'fields'
-        Schema::dropColumns('fields', ['category']);
+        // Rename unused 'category' on 'fields'
+        Schema::table('fields', function (Blueprint $table) {
+            $table->renameColumn('category', 'icon');
+        });
+        Schema::table('fields', function (Blueprint $table) {
+            $table->string('icon')->nullable(false)->default('bs.gear')->change();
+        });
 
         // Add items to 'fields' table
         $fields = DB::table('fields');
@@ -66,7 +71,7 @@ class RemoveLegacyFields extends Migration
             $query2 = DB::table('user_properties')->where('user_id', $user->id)->get();
             $current_properties = [];
             for ($i = 0; $i < count($query2); $i++){
-                $current_properties[$query2[$i]['field_id']] = $query2[$i]['value'];
+                $current_properties[$query2[$i]->field_id] = $query2[$i]->value;
             }
 
             // Automatically update new fields which was not set before
@@ -139,11 +144,18 @@ class RemoveLegacyFields extends Migration
                     $user->update(['id_pubg_mobile' => $property->value]);
                     break;
                 default: continue 2;
-
-            // Remove this record, so updates from the older version of the database can be migrated properly
-            $user_properties->where('user_id', $property->user_id)->where('field_id', $property->property_id)->delete();
             }
         }
+
+        $user_properties->where('field_id', 'university.major')
+            ->orWhere('field_id', 'university.nim')
+            ->orWhere('field_id', 'contacts.phone')
+            ->orWhere('field_id', 'contacts.line')
+            ->orWhere('field_id', 'contacts.whatsapp')
+            ->orWhere('field_id', 'accounts.moonton.mobile_legends')
+            ->orWhere('field_id', 'accounts.riot.valorant')
+            ->orWhere('field_id', 'accounts.tencent.pubg_mobile')
+            ->delete();
 
         // Query all users to check their BINUSIAN status
         $query = DB::table('users')->get();
@@ -158,5 +170,10 @@ class RemoveLegacyFields extends Migration
             'contacts.phone', 'contacts.instagram', 'contacts.line', 'contacts.telegram', 'contacts.twitter', 'contacts.whatsapp',
             'university.nim', 'university.major'
         ]);
+
+        // Re-add 'category' to 'fields'
+        Schema::table('fields', function (Blueprint $table) {
+            $table->renameColumn('icon', 'category');
+        });
     }
 }
