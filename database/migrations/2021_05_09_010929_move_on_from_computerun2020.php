@@ -24,8 +24,13 @@ class MoveOnFromComputerun2020 extends Migration
         // Add new fields to 'events'
         if (Schema::hasTable('events')) Schema::table('events', function (Blueprint $table) {
             $table->boolean('private')->default(true);
-            $table->unsignedBigInteger('cover_image')->nullable();
-            $table->foreign('cover_image')->references('id')->on('files');
+            $table->mediumText('cover_image')->nullable();
+            $table->string('kicker')->nullable();
+            $table->longText('description_public')->nullable();
+            $table->longText('description_pending')->nullable();
+            $table->longText('description_private')->nullable();
+            $table->string('theme_color_foreground')->nullable();
+            $table->string('theme_color_background')->nullable();
         });
 
         // Add new table
@@ -36,6 +41,7 @@ class MoveOnFromComputerun2020 extends Migration
             $table->foreign('field_id')->references('id')->on('fields');
             $table->boolean('required');
             $table->string('validation_rule')->nullable();
+            $table->mediumText('validation_description')->nullable();
             $table->primary(['event_id', 'field_id']);
         });
 
@@ -77,11 +83,14 @@ class MoveOnFromComputerun2020 extends Migration
 
         if (Schema::hasTable('events')){
             Schema::table('events', function (Blueprint $table) {
-                $table->dropForeign(['cover_image']);
-            });
-            Schema::table('events', function (Blueprint $table) {
                 $table->dropColumn('private');
                 $table->dropColumn('cover_image');
+                $table->dropColumn('kicker');
+                $table->dropColumn('description_public');
+                $table->dropColumn('description_pending');
+                $table->dropColumn('description_private');
+                $table->dropColumn('theme_color_foreground');
+                $table->dropColumn('theme_color_background');
             });
         }
 
