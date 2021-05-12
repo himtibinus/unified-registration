@@ -147,8 +147,9 @@
                                 <form action="/registerevent" method="POST">
                                     @csrf
                                     <div class="form-group mb-4">
+                                        <input type="hidden" name="event_id" value="{{ $event->id }}">
                                         <label for="slots">{{ __('Number of Tickets/Slots') }}<b class="text-danger">*</b></label>
-                                        <input id="slots" type="number" class="form-control" min="1" max="{{ $event->slots - $registrations_approved }}" required onChange="validateRegistration()">
+                                        <input name="slots" id="slots" type="number" class="form-control" min="1" max="{{ $event->slots - $registrations_approved }}" required onChange="validateRegistration()">
                                     </div>
                                     @if($event->team_members > 0)
                                         <hr>
