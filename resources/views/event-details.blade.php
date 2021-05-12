@@ -145,6 +145,7 @@
                             @endif
                             @if ($eligible_to_register)
                                 <form action="/registerevent" method="POST">
+                                    @csrf
                                     <div class="form-group mb-4">
                                         <label for="slots">{{ __('Number of Tickets/Slots') }}<b class="text-danger">*</b></label>
                                         <input id="slots" type="number" class="form-control" min="1" max="{{ $event->slots - $registrations_approved }}" required onChange="validateRegistration()">
