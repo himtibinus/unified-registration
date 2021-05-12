@@ -19,7 +19,7 @@
 }
 
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
-    font-weight: 900;
+    font-weight: 700;
 }
 .btn {
     font-weight: 600;
@@ -51,11 +51,26 @@
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
 }
-.card-img-left {
+.card-auto {
+    flex-direction: row;
+}
+.card-img-auto {
     height: 160px;
     width: 160px;
     border-top-left-radius: 14px;
     border-bottom-left-radius: 14px;
+}
+@media screen and (max-width: 575px){
+    .card-auto {
+        flex-direction: column;
+    }
+    .card-img-auto {
+        height: auto;
+        width: 100%;
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+        border-bottom-left-radius: 0;
+    }
 }
 .ua-android .font-clock {
     font-family:

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +17,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::resource('/events', App\Http\Controllers\EventController::class);
+
+// Get user details (for registration)
+Route::post('/getuserdetails', [App\Http\Controllers\EventController::class, 'getUserDetails']);
+Route::post('/registerevent', [App\Http\Controllers\EventController::class, 'registerToEvent']);
+
+// Attendance
+Route::post('/attendance/{id}', [App\Http\Controllers\EventController::class, 'attendance']);
