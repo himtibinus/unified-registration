@@ -12239,6 +12239,10 @@ textarea.form-control-lg {
   border-bottom-left-radius: 14px;
 }
 
+.card img {
+  max-width: 100%;
+}
+
 @media screen and (max-width: 575px) {
   .card-auto {
     flex-direction: column;

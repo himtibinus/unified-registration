@@ -65,7 +65,7 @@
                                     Pending
                                     @break
                                 @case(1)
-                                    Accepted
+                                    Rejected
                                     @break
                                 @case(2)
                                     Accepted
