@@ -87,10 +87,9 @@ class EventController extends Controller
                 // Is the field required or optional?
                 if ($event_permissions[$i]->required){
                     $eligible_to_register = false;
-                } else {
-                    // Increment $i but not $j
-                    $j--;
                 }
+                // Increment $i but not $j
+                $j--;
             }
         }
         // If the last required permissions is not satisfied
