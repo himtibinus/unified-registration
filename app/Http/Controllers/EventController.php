@@ -175,7 +175,7 @@ class EventController extends Controller
         // Check whether the user has been logged in and registered
         if (Auth::check()){
             $user = Auth::user();
-            $registrations = DB::table('registration')->where('ticket_id', $user->id)->where('event_id', $event->id)->get();
+            $registrations = DB::table('registration')->where('ticket_id', $user->id)->where('event_id', $event->id)->where('status', '!=', 1)->get();
         }
 
         $admin_or_committee = $this->requiresLogin($request->url(), $event->id, true, true);
@@ -345,7 +345,7 @@ class EventController extends Controller
         // Check permissions and validation
         $user_properties = DB::table('user_properties')->where('user_id', $user->id)->get();
         $validation = $this->validateFields($event_permissions, $user_properties);
-        $registrations = DB::table('registration')->where('ticket_id', $user->id)->where('event_id', $request->get('eventId'))->get();
+        $registrations = DB::table('registration')->where('ticket_id', $user->id)->where('event_id', $request->get('eventId'))->where('status', '!=', 1)->get();
 
         if ($event->slots - count($registrations) <= 0) $validation->eligible_to_register = false;
 
@@ -419,7 +419,7 @@ class EventController extends Controller
 
         foreach ($queue as $user){
             $user_properties = DB::table('user_properties')->where('user_id', $user->id)->get();
-            $registrations = DB::table('registration')->where('event_id', $event->id)->where('ticket_id', $user->id)->get();
+            $registrations = DB::table('registration')->where('event_id', $event->id)->where('ticket_id', $user->id)->where('status', '!=', 1)->get();
             $validation = $this->validateFields($event_permissions, $user_properties);
             if ($event->slots - count($registrations) <= 0) $validation->eligible_to_register = false;
 
