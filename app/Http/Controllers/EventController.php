@@ -15,21 +15,12 @@ use Illuminate\Support\Facades\Session;
 
 class EventController extends Controller
 {
-    /**
-     * Utility function to ensure that the user has been authenticated
-     */
-    private function requiresLogin(string $path, int $eventId, bool $for_admin, bool $for_committee){
+    private function checkAdminOrCommittee($userId, $eventId){
         $admin = false;
         $committee = false;
 
-        if (!Auth::check()){
-            Session::put('error', 'Please log in before continuing to this page');
-            Session::put('loginTo', $path);
-            return false;
-        }
-
         // Check whether the user is an admin or comittee
-        $select = DB::table('user_properties')->where('user_id', Auth::id());
+        $select = DB::table('user_properties')->where('user_id', $userId);
         $query = $select->where('field_id', 'role.administrator')->get();
         if (count($query) == 0 || $query[0]->value == '1'){
             $admin = true;
@@ -56,7 +47,25 @@ class EventController extends Controller
             }
         }
 
-        if ($admin && $for_admin == true || $committee && $for_committee == true) return true;
+        return (object) [
+            'admin' => $admin,
+            'committee' => $committee
+        ];
+    }
+
+    /**
+     * Utility function to ensure that the user has been authenticated
+     */
+    private function requiresLogin(string $path, int $eventId, bool $for_admin, bool $for_committee){
+        if (!Auth::check()){
+            Session::put('error', 'Please log in before continuing to this page');
+            Session::put('loginTo', $path);
+            return false;
+        }
+
+        $check = $this->checkAdminOrCommittee(Auth::id(), $eventId);
+
+        if ($check->admin && $for_admin == true || $check->committee && $for_committee == true) return true;
         Session::put('error', 'You are not authorized to access this page');
         return false;
     }
@@ -222,9 +231,33 @@ class EventController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        //
+        // Make sure that the user is an admin or committee
+        if (!Auth::check()){
+            $request->session()->put('error', 'Please log in to continue.');
+            return redirect('home');
+        }
+
+        // Check whether the event exists
+        $event = DB::table('events')->where('id', $id)->first();
+        if (!$event){
+            $request->session()->put('error', 'This event does not exist.');
+            return redirect('home');
+        }
+
+        // Check whether the user is an admin or committee
+        $check = $this->checkAdminOrCommittee(Auth::id(), $id);
+        if (!$check->admin && !$check->committee){
+            // If not simply return to main page
+            return redirect('events/' . $id);
+        }
+
+        // Gather the data
+        $data = DB::table('registration')->join('users', 'users.id', 'registration.ticket_id')->join('attendance', 'registration.id', '=', 'attendance.registration_id', 'left outer')->where('event_id', $id)->get();
+        
+        // Return view
+        return view('event-manager', ['event' => $event, 'registrations' => $data, 'role' => $check]);
     }
 
     /**

@@ -51,7 +51,7 @@
             @endif
             @foreach($registrations as $registration)
                 <?php
-                    if ($registration->status > 1) $registrations_approved++;
+                    if ($registration->status != 1) $registrations_approved++;
                 ?>
                 <div class="card mb-4">
                     <div class="card-header h4 bg-primary text-white">
@@ -179,7 +179,7 @@
                                         @endfor
                                     @endif
                                     <div id="submit-validation">
-                                        <div class="alert alert-danger">All member details should be added.</div>
+                                        <div class="alert alert-danger">All required fields should be entered.</div>
                                     </div>
                                 </form>
                             @endif
