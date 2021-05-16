@@ -146,41 +146,47 @@
                             @if ($eligible_to_register)
                                 <form action="/registerevent" method="POST">
                                     @csrf
-                                    <div class="form-group mb-4">
-                                        <input type="hidden" name="event_id" value="{{ $event->id }}">
-                                        <label for="slots">{{ __('Number of Tickets/Slots') }}<b class="text-danger">*</b></label>
-                                        <input name="slots" id="slots" type="number" class="form-control" min="1" max="{{ $event->slots - $registrations_approved }}" required onChange="validateRegistration()">
-                                    </div>
-                                    @if($event->team_members > 0)
-                                        <hr>
-                                        <h4>Team Information</h4>
-                                        <div class="alert alert-info">You will be registered as the <b>leader</b> of your team.</div>
+                                    <input type="hidden" name="event_id" value="{{ $event->id }}">
+                                    @if($event->slots - $registrations_approved == 1)
+                                        <input type="hidden" name="slots" value="1">
+                                        <p class="text mb-4 fw-bold">By registering to this event, you agree to our rules and regulations.</p>
+                                        <button type="submit" class="btn btn-primary" onclick="this.form.submit();this.setAttribute('disabled','disabled');">Submit</button>
+                                    @else
                                         <div class="form-group mb-4">
-                                            <label for="team_name">Team Name<b class="text-danger">*</b></label>
-                                            <input type="text" class="form-control" name="team_name" id="team_name" required>
+                                            <label for="slots">{{ __('Number of Tickets/Slots') }}<b class="text-danger">*</b></label>
+                                            <input name="slots" id="slots" type="number" class="form-control" min="1" max="{{ $event->slots - $registrations_approved }}" required onChange="validateRegistration()">
                                         </div>
-                                        <div class="form-group mb-4">
-                                            <label for="team_leader">Team Leader<b class="text-danger">*</b></label>
-                                            <input type="text" class="form-control" id="team_leader" disabled value="{{Auth::user()->email}}">
+                                        @if($event->team_members > 0)
+                                            <hr>
+                                            <h4>Team Information</h4>
+                                            <div class="alert alert-info">You will be registered as the <b>leader</b> of your team.</div>
+                                            <div class="form-group mb-4">
+                                                <label for="team_name">Team Name<b class="text-danger">*</b></label>
+                                                <input type="text" class="form-control" name="team_name" id="team_name" required>
+                                            </div>
+                                            <div class="form-group mb-4">
+                                                <label for="team_leader">Team Leader<b class="text-danger">*</b></label>
+                                                <input type="text" class="form-control" id="team_leader" disabled value="{{Auth::user()->email}}">
+                                            </div>
+                                            @for($i = 1; $i <= $event->team_members; $i++)
+                                                <div class="form-group mb-4">
+                                                    <label for="team_member_{{ $i }}">Team Member {{ $i }}'s registered Email Address<b class="text-danger">*</b></label>
+                                                    <input type="email" class="form-control" name="team_member_{{ $i }}" id="team_member_{{ $i }}" required onChange="validateUser('team_member_{{ $i }}')">
+                                                    <span role="alert" id="team_member_{{ $i }}_validation" style="display: none"></span>
+                                                </div>
+                                            @endfor
+                                            @for($i = 1; $i <= $event->team_members_reserve; $i++)
+                                                <div class="form-group mb-4">
+                                                    <label for="team_member_reserve_{{ $i }}">Reserve Team Member {{ $i }}'s registered Email Address<b class="text-danger">*</b></label>
+                                                    <input type="email" class="form-control" name="team_member_reserve_{{ $i }}" id="team_member_reserve_{{ $i }}" onChange="validateUser('team_member_reserve_{{ $i }}')">
+                                                    <span role="alert" id="team_member_reserve_{{ $i }}_validation" style="display: none"></span>
+                                                </div>
+                                            @endfor
+                                        @endif
+                                        <div id="submit-validation">
+                                            <div class="alert alert-danger">All required fields should be entered.</div>
                                         </div>
-                                        @for($i = 1; $i <= $event->team_members; $i++)
-                                            <div class="form-group mb-4">
-                                                <label for="team_member_{{ $i }}">Team Member {{ $i }}'s registered Email Address<b class="text-danger">*</b></label>
-                                                <input type="email" class="form-control" name="team_member_{{ $i }}" id="team_member_{{ $i }}" required onChange="validateUser('team_member_{{ $i }}')">
-                                                <span role="alert" id="team_member_{{ $i }}_validation" style="display: none"></span>
-                                            </div>
-                                        @endfor
-                                        @for($i = 1; $i <= $event->team_members_reserve; $i++)
-                                            <div class="form-group mb-4">
-                                                <label for="team_member_reserve_{{ $i }}">Reserve Team Member {{ $i }}'s registered Email Address<b class="text-danger">*</b></label>
-                                                <input type="email" class="form-control" name="team_member_reserve_{{ $i }}" id="team_member_reserve_{{ $i }}" onChange="validateUser('team_member_reserve_{{ $i }}')">
-                                                <span role="alert" id="team_member_reserve_{{ $i }}_validation" style="display: none"></span>
-                                            </div>
-                                        @endfor
                                     @endif
-                                    <div id="submit-validation">
-                                        <div class="alert alert-danger">All required fields should be entered.</div>
-                                    </div>
                                 </form>
                             @endif
                         @else
@@ -332,7 +338,7 @@
         } else if (emails.length > emailSet.size){
             document.getElementById("submit-validation").innerHTML = '<div class="alert alert-danger">Error: No duplicate emails allowed.</div>';
         } else {
-            document.getElementById("submit-validation").innerHTML = `<p class="text mb-4 fw-bold">By registering to this competition, you agree to our rules and regulations.</p><button type="submit" class="btn btn-primary" onclick="this.form.submit();this.setAttribute('disabled','disabled');">Submit</button>`;
+            document.getElementById("submit-validation").innerHTML = `<p class="text mb-4 fw-bold">By registering to this event, you agree to our rules and regulations.</p><button type="submit" class="btn btn-primary" onclick="this.form.submit();this.setAttribute('disabled','disabled');">Submit</button>`;
         }
     }
     function checkIn(registrationId){

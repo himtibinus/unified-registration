@@ -21,27 +21,29 @@ class EventController extends Controller
 
         // Check whether the user is an admin or comittee
         $select = DB::table('user_properties')->where('user_id', $userId);
-        $query = $select->where('field_id', 'role.administrator')->get();
-        if (count($query) == 0 || $query[0]->value == '1'){
+        $query = $select->where('field_id', 'role.administrator')->first();
+        if ($query && $query->value == '1'){
             $admin = true;
             $committee = true;
         }
-        $query = $select->where('field_id', 'role.committee')->get();
-        if (count($query) == 0 || $query[0]->value == '1'){
+        $select = DB::table('user_properties')->where('user_id', $userId);
+        $query = $select->where('field_id', 'role.committee')->first();
+        if ($query && $query->value == '1'){
             $committee = true;
         }
         if (!$admin && !$committee && $eventId > 0){
             // Check whether Event ID exists
-            $select = DB::table('events')->where('id', $eventId)->get();
-            if (count($select) > 0){
+            $select = DB::table('events')->where('id', $eventId)->first();
+            if ($select){
                 $select = DB::table('event_roles')->where('event_id', $eventId);
-                $query = $select->where('system_role', 'role.administrator')->get();
-                if (count($query) == 0 || $query[0]->value != '1'){
+                $query = $select->where('system_role', 'role.administrator')->first();
+                if ($query && $query->value == '1'){
                     $admin = true;
                     $committee = true;
                 }
-                $query = $select->where('system_role', 'role.committee')->get();
-                if (count($query) == 0 || $query[0]->value != '1'){
+                $select = DB::table('event_roles')->where('event_id', $eventId);
+                $query = $select->where('system_role', 'role.committee')->first();
+                if ($query && $query->value == '1'){
                     $committee = true;
                 }
             }
@@ -65,7 +67,7 @@ class EventController extends Controller
 
         $check = $this->checkAdminOrCommittee(Auth::id(), $eventId);
 
-        if ($check->admin && $for_admin == true || $check->committee && $for_committee == true) return true;
+        if (($check->admin && $for_admin) || ($check->committee && $for_committee) == true) return true;
         Session::put('error', 'You are not authorized to access this page');
         return false;
     }
@@ -255,7 +257,7 @@ class EventController extends Controller
 
         // Gather the data
         $data = DB::table('registration')->join('users', 'users.id', 'registration.ticket_id')->join('attendance', 'registration.id', '=', 'attendance.registration_id', 'left outer')->where('event_id', $id)->get();
-        
+
         // Return view
         return view('event-manager', ['event' => $event, 'registrations' => $data, 'role' => $check]);
     }
