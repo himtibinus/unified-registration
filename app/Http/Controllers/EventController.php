@@ -7,6 +7,8 @@ use App\Mail\SendNewTeamNotification;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use DateTime;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -271,7 +273,85 @@ class EventController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // Make sure that it's an Admin (Higher Level)
+        if (!$this->requiresLogin($request->path(), $id, true, false)) return redirect('home');
+
+        foreach($request->all() as $key => $value) {
+            if (Str::startsWith($key, "status-") && $value >= 0){
+                $key = substr($key, 7);
+                DB::table('registration')->where('id', $key)->update(['status' => $value]);
+            } else if (Str::startsWith($key, "action-")) switch ($key){
+                case "action-update-kicker":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['kicker' => $value]);
+                break;
+                case "action-update-name":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['name' => $value]);
+                break;
+                case "action-update-date":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['date' => new DateTime($value)]);
+                break;
+                case "action-update-location":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['location' => $value]);
+                break;
+                case "action-update-price":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['price' => $value]);
+                break;
+                case "action-update-cover_image":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['cover_image' => $value]);
+                break;
+                case "action-update-theme_color_foreground":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['theme_color_foreground' => $value]);
+                break;
+                case "action-update-theme_color_background":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['theme_color_background' => $value]);
+                break;
+                case "action-update-description_public":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['description_public' => $value]);
+                break;
+                case "action-update-description_pending":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['description_pending' => $value]);
+                break;
+                case "action-update-description_private":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['description_private' => $value]);
+                break;
+                case "action-registration-status":
+                    if ($value == "enabled") DB::table('events')->where('id', $id)->update(['opened' => 1]);
+                    else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['opened' => 0]);
+                break;
+                case "action-registration-private":
+                    if ($value == "private") DB::table('events')->where('id', $id)->update(['private' => 1]);
+                    else if ($value == "public") DB::table('events')->where('id', $id)->update(['private' => 0]);
+                break;
+                case "action-update-seats":
+                    if ($value > 0) DB::table('events')->where('id', $id)->update(['seats' => $value]);
+                break;
+                case "action-update-slots":
+                    if ($value > 0) DB::table('events')->where('id', $id)->update(['slots' => $value]);
+                break;
+                case "action-update-team_members":
+                    if ($value > 0) DB::table('events')->where('id', $id)->update(['team_members' => $value]);
+                break;
+                case "action-update-team_members_reserve":
+                    if ($value > 0) DB::table('events')->where('id', $id)->update(['team_members_reserve' => $value]);
+                break;
+                case "action-attendance-status":
+                    if ($value == "enabled") DB::table('events')->where('id', $id)->update(['attendance_opened' => 1]);
+                    else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['attendance_opened' => 0]);
+                break;
+                case "action-attendance-type":
+                    if ($value == "entrance") DB::table('events')->where('id', $id)->update(['attendance_is_exit' => 0]);
+                    else if ($value == "exit") DB::table('events')->where('id', $id)->update(['attendance_is_exit' => 1]);
+                break;
+                case "action-update-url_link":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['url_link' => $value]);
+                break;
+                case "action-update-totp_key":
+                    if ($value != '') DB::table('events')->where('id', $id)->update(['totp_key' => $value]);
+                break;
+            }
+        }
+
+        return redirect("/event/" . $id . '/edit');
     }
 
     /**
