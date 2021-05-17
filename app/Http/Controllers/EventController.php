@@ -188,6 +188,7 @@ class EventController extends Controller
         if (Auth::check()){
             $user = Auth::user();
             $registrations = DB::table('registration')->where('ticket_id', $user->id)->where('event_id', $event->id)->where('status', '!=', 1)->get();
+            $rejected = DB::table('registration')->where('ticket_id', $user->id)->where('event_id', $event->id)->where('status', 1)->get();
         }
 
         $admin_or_committee = $this->requiresLogin($request->url(), $event->id, true, true);
@@ -226,7 +227,7 @@ class EventController extends Controller
         if ($event->slots - count($registrations) <= 0) $validation->eligible_to_register = false;
 
         // Return view
-        return view('event-details', ['event' => $event, 'user' => $user, 'registrations' => $registrations, 'admin_or_committee' => $admin_or_committee, 'event_permissions' => $validation->event_permissions, 'eligible_to_register' => $validation->eligible_to_register]);
+        return view('event-details', ['event' => $event, 'user' => $user, 'registrations' => array_merge($registrations, $rejected), 'admin_or_committee' => $admin_or_committee, 'event_permissions' => $validation->event_permissions, 'eligible_to_register' => $validation->eligible_to_register]);
     }
 
     /**
@@ -470,7 +471,6 @@ class EventController extends Controller
 
         return response()->json([
             'name' => $user->name,
-            'registrations' => $registrations,
             'eligibleToRegister' => $validation->eligible_to_register,
             'remainingSlots' => $event->slots - count($registrations),
             'eventPermissions' => $validation->event_permissions
