@@ -25,7 +25,7 @@
                 </div>
                 <div class="form-group mb-4">
                     <label for="action-update-date">{{ __('Event Date') }}<b class="text-danger">*</b></label>
-                    <input name="action-update-date" id="action-update-location" type="datetime-date" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}+[0-9]{2}:[0-9]{2}" value="{{ date("c", strtotime($event->date)) }}" class="form-control" @if(!$role->admin) disabled @else required @endif>
+                    <input name="action-update-date" id="action-update-location" type="datetime-date" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\+[0-9]{2}:[0-9]{2}" value="{{ date("c", strtotime($event->date)) }}" class="form-control" @if(!$role->admin) disabled @else required @endif>
                 </div>
                 <div class="form-group mb-4">
                     <label for="action-update-location">{{ __('Event Location') }}</label>
@@ -209,7 +209,7 @@
                 </p>
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group mr-2" role="group">
-                        <button type="button" class="btn btn-primary" onClick="requestParticipantDetails({{ $registration->id }})">
+                        <button type="button" class="btn btn-primary" onClick="requestParticipantDetails('{{ $registration->email }}')">
                             <i class="bi bi-person-circle"></i> View Participant Details
                         </button>
                     </div>
@@ -241,4 +241,81 @@
         @endif
     </div>
 </form>
+
+<!-- Participant Details Modal -->
+<div class="modal fade" id="participantDetailsModal" tabindex="-1" aria-labelledby="participantDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="participantDetailsModalLabel"><i class="bi bi-person-circle"></i> Participant Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="participantDetailsList"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function requestParticipantDetails(email){
+        var xhr = new XMLHttpRequest();
+        var params = JSON.stringify({ email: email, allowSelf: true, eventId:{{ $event->id }} });
+        xhr.open("POST", "/getuserdetails");
+        xhr.setRequestHeader("X-CSRF-TOKEN", "{!! csrf_token() !!}");
+        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+        // xhr.setRequestHeader("Content-length", params.length);
+        // xhr.setRequestHeader("Connection", "close");
+        xhr.onload = function() {
+            if (xhr.status != 200) {
+                console.error('Error ' + xhr.status + ': ' + xhr.statusText);
+            } else {
+                // Check whether the output is JSON
+                try {
+                    var json = JSON.parse(xhr.responseText);
+                    // Check if the JSON data displays an error
+                    if (json.error) throw json.error;
+                    // Send to UI
+                    showParticipantDetails(email, json);
+                } catch (e) {
+                    console.error('Error: ' + e);
+                }
+            }
+        };
+        xhr.send(params);
+    }
+
+    function showParticipantDetails(email, json){
+        // Set up links
+        list = document.getElementById("participantDetailsList");
+        list.innerHTML = "";
+
+        function createList(key, value){
+            var element = document.createElement("li");
+            var keyElement = document.createElement("b");
+            keyElement.textContent = key + ":";
+            element.appendChild(keyElement);
+            var valueElement = document.createTextNode(" " + (value || ""));
+            element.appendChild(valueElement);
+            if (!value){
+                var nullElement = document.createElement("i");
+                nullElement.textContent = "NULL";
+                element.appendChild(nullElement);
+            }
+            return element;
+        }
+
+        list.appendChild(createList("Name", json.name));
+        list.appendChild(createList("Email", email));
+
+        var i;
+        for (i = 0; i < json.eventPermissions.length; i++){
+            list.appendChild(createList(json.eventPermissions[i].name, json.eventPermissions[i].current_value));
+        }
+
+        console.log(json);
+        var modal = new bootstrap.Modal(document.getElementById("participantDetailsModal"));
+        modal.show();
+    }
+</script>
 @endsection

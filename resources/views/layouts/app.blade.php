@@ -10,8 +10,8 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-    <script src="{{ asset('js/cssua.min.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/cssua.min.js') }}"></script>
     <script>
         function adjustDate(element){
             // Localize date and time

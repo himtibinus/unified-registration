@@ -324,7 +324,7 @@
     function validateUser(input){
         var selected = document.getElementById(input).value;
         var xhr = new XMLHttpRequest();
-        var params = JSON.stringify({ email: selected, allowSelf: true, eventId:{{ $event->id }} });
+        var params = JSON.stringify({ email: selected, allowSelf: false, eventId:{{ $event->id }} });
         xhr.open("POST", "/getuserdetails");
         xhr.setRequestHeader("X-CSRF-TOKEN", "{!! csrf_token() !!}");
         xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
