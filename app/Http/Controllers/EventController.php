@@ -470,6 +470,7 @@ class EventController extends Controller
 
         return response()->json([
             'name' => $user->name,
+            'registrations' => $registrations,
             'eligibleToRegister' => $validation->eligible_to_register,
             'remainingSlots' => $event->slots - count($registrations),
             'eventPermissions' => $validation->event_permissions
