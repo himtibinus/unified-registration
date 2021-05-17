@@ -1,84 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<form action="/events/{{ $event->id }}" method="PUT" class="row justify-content-center mx-0" style="background-color: @if(isset($event->theme_color_background)) {{$event->theme_color_background}} @else #4159a7 @endif; color: @if(isset($event->theme_color_foreground)) {{$event->theme_color_foreground}} @else #ffffff @endif;">
+<form action="/events/{{ $event->id }}" method="POST" class="row flex-row-reverse justify-content-center mx-0" style="background-color: @if(isset($event->theme_color_background)) {{$event->theme_color_background}} @else #4159a7 @endif; color: @if(isset($event->theme_color_foreground)) {{$event->theme_color_foreground}} @else #ffffff @endif;">
+    @csrf
     <input name="_method" type="hidden" value="PUT">
-    <div class="col-12 col-xl-8 p-4 pb-sm-0">
-        <h1 class="display-4 mb-4">Participants</h1>
-        @foreach ($registrations as $registration)
-        <div class="card mb-4">
-            <div class="card-header h4 @if($registration->status > 3) bg-info @elseif($registration->status > 1) bg-success @elseif($registration->status == 1) bg-danger @else bg-secondary @endif text-white">
-                #{{ $registration->id }}: {{ $registration->name }}
-            </div>
-            <div class="card-body text-dark">
-                <p class="card-title">
-                    <b>Status:</b>
-                    @switch($registration->status)
-                        @case(0)
-                            Pending
-                            @break
-                        @case(1)
-                            Rejected
-                            @break
-                        @case(2)
-                            Accepted
-                            @break
-                        @case(3)
-                            Cancelled
-                            @break
-                        @case(4)
-                            Attending
-                            @break
-                        @case(5)
-                            Attended
-                            @break
-                        @default
-                            Unknown ({{ $registration->status }})
-                    @endswitch
-                    <br>
-                    @if(strlen($registration->payment_code) > 0)
-                        <b>Email:</b> {{ $registration->payment_code }}<br>
-                    @endif
-                    @if(strlen($registration->payment_code) > 0)
-                        <b>Payment Code:</b> {{ $registration->payment_code }}<br>
-                    @endif
-                    @if(strlen($registration->remarks) > 0)
-                        <b>Remarks: </b> {{ $registration->remarks }}
-                    @endif
-                </p>
-                <div class="btn-toolbar" role="toolbar">
-                    <div class="btn-group mr-2" role="group">
-                        <button type="button" class="btn btn-primary" onClick="requestParticipantDetails({{ $registration->id }})">
-                            <i class="bi bi-person-circle"></i> View Participant Details
-                        </button>
-                    </div>
-                    <div class="btn-group mr-2" role="group">
-                        <select name="status-{{$registration->id}}" id="status-{{$registration->id}}">
-                            <option value="-1">Override Status to...</option>
-                            <option value="0">0: Not yet accepted</option>
-                            <option value="1">1: Rejected</option>
-                            <option value="2">2: Approved</option>
-                            <option value="3">3: Cancelled</option>
-                            <option value="4">4: Attending</option>
-                            <option value="5">5: Attended</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endforeach
-        @if($role->admin == true)
-            <div class="card mb-4">
-                <div class="card-header h4 text-white bg-primary">
-                    <i class="bi bi-check-circle"></i> Confirmation
-                </div>
-                <div class="card-body text-dark">
-                    <p>Make sure that you have saved all changes</p>
-                    <input type="submit" value="Save" class="btn btn-primary">
-                </div>
-            </div>
-        @endif
-    </div>
     <div class="col-12 col-xl-4 p-4 pr-sm-0">
         @if($role->admin == true)
             <h1 class="display-4 mb-4">Settings</h1>
@@ -227,6 +152,82 @@
                 </div>
             </div>
         </div>
+        @if($role->admin == true)
+            <div class="card mb-4">
+                <div class="card-header h4 text-white bg-primary">
+                    <i class="bi bi-check-circle"></i> Confirmation
+                </div>
+                <div class="card-body text-dark">
+                    <p>Make sure that you have saved all changes</p>
+                    <input type="submit" value="Save" class="btn btn-primary">
+                </div>
+            </div>
+        @endif
+    </div>
+    <div class="col-12 col-xl-8 p-4 pb-sm-0">
+        <h1 class="display-4 mb-4">Participants</h1>
+        @foreach ($registrations as $registration)
+        <div class="card mb-4">
+            <div class="card-header h4 @if($registration->status > 3) bg-info @elseif($registration->status > 1) bg-success @elseif($registration->status == 1) bg-danger @else bg-secondary @endif text-white">
+                #{{ $registration->id }}: {{ $registration->name }}
+            </div>
+            <div class="card-body text-dark">
+                <p class="card-title">
+                    <b>Status:</b>
+                    @switch($registration->status)
+                        @case(0)
+                            Pending
+                            @break
+                        @case(1)
+                            Rejected
+                            @break
+                        @case(2)
+                            Accepted
+                            @break
+                        @case(3)
+                            Cancelled
+                            @break
+                        @case(4)
+                            Attending
+                            @break
+                        @case(5)
+                            Attended
+                            @break
+                        @default
+                            Unknown ({{ $registration->status }})
+                    @endswitch
+                    <br>
+                    @if(strlen($registration->payment_code) > 0)
+                        <b>Email:</b> {{ $registration->payment_code }}<br>
+                    @endif
+                    @if(strlen($registration->payment_code) > 0)
+                        <b>Payment Code:</b> {{ $registration->payment_code }}<br>
+                    @endif
+                    @if(strlen($registration->remarks) > 0)
+                        <b>Remarks: </b> {{ $registration->remarks }}
+                    @endif
+                </p>
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group mr-2" role="group">
+                        <button type="button" class="btn btn-primary" onClick="requestParticipantDetails({{ $registration->id }})">
+                            <i class="bi bi-person-circle"></i> View Participant Details
+                        </button>
+                    </div>
+                    <div class="btn-group mr-2" role="group">
+                        <select name="status-{{$registration->id}}" id="status-{{$registration->id}}">
+                            <option value="-1">Override Status to...</option>
+                            <option value="0">0: Not yet accepted</option>
+                            <option value="1">1: Rejected</option>
+                            <option value="2">2: Approved</option>
+                            <option value="3">3: Cancelled</option>
+                            <option value="4">4: Attending</option>
+                            <option value="5">5: Attended</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
         @if($role->admin == true)
             <div class="card mb-4">
                 <div class="card-header h4 text-white bg-primary">
