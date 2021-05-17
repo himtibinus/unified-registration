@@ -2,12 +2,13 @@
 
 @section('content')
 <form action="/events/{{ $event->id }}" method="PUT" class="row justify-content-center mx-0" style="background-color: @if(isset($event->theme_color_background)) {{$event->theme_color_background}} @else #4159a7 @endif; color: @if(isset($event->theme_color_foreground)) {{$event->theme_color_foreground}} @else #ffffff @endif;">
+    <input name="_method" type="hidden" value="PUT">
     <div class="col-12 col-xl-8 p-4 pb-sm-0">
         <h1 class="display-4 mb-4">Participants</h1>
         @foreach ($registrations as $registration)
         <div class="card mb-4">
             <div class="card-header h4 @if($registration->status > 3) bg-info @elseif($registration->status > 1) bg-success @elseif($registration->status == 1) bg-danger @else bg-secondary @endif text-white">
-                #{{ $registration->registration_id }}: {{ $registration->name }}
+                #{{ $registration->id }}: {{ $registration->name }}
             </div>
             <div class="card-body text-dark">
                 <p class="card-title">
@@ -99,7 +100,7 @@
                 </div>
                 <div class="form-group mb-4">
                     <label for="action-update-date">{{ __('Event Date') }}<b class="text-danger">*</b></label>
-                    <input name="action-update-date" id="action-update-location" type="datetime-date" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}" value="{{ date("c", strtotime($event->date)) }}" class="form-control" @if(!$role->admin) disabled @else required @endif>
+                    <input name="action-update-date" id="action-update-location" type="datetime-date" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}+[0-9]{2}:[0-9]{2}" value="{{ date("c", strtotime($event->date)) }}" class="form-control" @if(!$role->admin) disabled @else required @endif>
                 </div>
                 <div class="form-group mb-4">
                     <label for="action-update-location">{{ __('Event Location') }}</label>
