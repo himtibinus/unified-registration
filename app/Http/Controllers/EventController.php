@@ -349,9 +349,14 @@ class EventController extends Controller
                     if ($value != '') DB::table('events')->where('id', $id)->update(['totp_key' => $value]);
                 break;
             }
+            // Clear cache
+            Cache::forget('availableEvents');
+            $availableEvents = DB::table('events')->where('private', false)->where('opened', true)->get();
+            Cache::put('availableEvents', $availableEvents, 300);
+
         }
 
-        return redirect("/event/" . $id . '/edit');
+        return redirect("/events/" . $id . '/edit');
     }
 
     /**
