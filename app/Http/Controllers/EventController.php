@@ -39,13 +39,13 @@ class EventController extends Controller
             if ($select){
                 $select = DB::table('event_roles')->where('event_id', $eventId);
                 $query = $select->where('system_role', 'role.administrator')->first();
-                if ($query && $query->value == '1'){
+                if ($query){
                     $admin = true;
                     $committee = true;
                 }
                 $select = DB::table('event_roles')->where('event_id', $eventId);
                 $query = $select->where('system_role', 'role.committee')->first();
-                if ($query && $query->value == '1'){
+                if ($query){
                     $committee = true;
                 }
             }
@@ -181,6 +181,7 @@ class EventController extends Controller
         // Set these variables to null to avoid querying some unnecessary data
         $user = null;
         $registrations = [];
+        $rejected = [];
         $event_permissions = null;
         $user_properties = null;
 

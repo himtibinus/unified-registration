@@ -115,73 +115,73 @@
                     </div>
                 </div>
             @endforeach
-            @foreach($rejected as $registration)
-                <?php
-                    if ($registration->status != 1) $registrations_approved++;
-                ?>
-                <div class="card mb-4">
-                    <div class="card-header h4 bg-primary text-white">
-                        <i class="bi bi-card-heading"></i> Ticket #{{ $registration->id }}
-                    </div>
-                    <div class="card-body text-dark">
-                        <p class="card-title">
-                            <b>Status:</b>
-                            @switch($registration->status)
-                                @case(0)
-                                    Pending
-                                    @break
-                                @case(1)
-                                    Rejected
-                                    @break
-                                @case(2)
-                                    Accepted
-                                    @break
-                                @case(3)
-                                    Cancelled
-                                    @break
-                                @case(4)
-                                    Attending
-                                    @break
-                                @case(5)
-                                    Attended
-                                    @break
-                                @default
-                                    Unknown ({{ $registration->status }})
-                            @endswitch
-                            <br>
-                            @if(strlen($registration->payment_code) > 0)
-                                <b>Payment Code:</b> {{ $registration->payment_code }}<br>
-                            @endif
-                            @if(strlen($registration->remarks) > 0)
-                                <b>Remarks: </b> {{ $registration->remarks }}
-                            @endif
-                        </p>
-                        @if($registration->status > 1)
-                            <div class="btn-toolbar" role="toolbar">
-                                <div class="btn-group mr-2" role="group">
-                                    <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
-                                        <i class="bi bi-box-arrow-in-right"></i> Check In
-                                    </button>
-                                </div>
-                                <div class="btn-group mr-2" role="group">
-                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#checkOutModal">
-                                        <i class="bi bi-box-arrow-left"></i> Check Out
-                                    </button>
-                                </div>
-                            </div>
-                        @elseif($registration->status == 1 && strlen($registration->payment_code) > 0)
-                            <div class="btn-toolbar" role="toolbar">
-                                <div class="btn-group mr-2" role="group">
-                                    <a type="button" class="btn btn-primary text-white" href="/pay/{{ $registration->payment_code }}">
-                                        <i class="bi bi-credit-card"></i> Pay
-                                    </a>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            @endforeach
         @endif
+        @foreach($rejected as $registration)
+            <?php
+                if ($registration->status != 1) $registrations_approved++;
+            ?>
+            <div class="card mb-4">
+                <div class="card-header h4 bg-primary text-white">
+                    <i class="bi bi-card-heading"></i> Ticket #{{ $registration->id }}
+                </div>
+                <div class="card-body text-dark">
+                    <p class="card-title">
+                        <b>Status:</b>
+                        @switch($registration->status)
+                            @case(0)
+                                Pending
+                                @break
+                            @case(1)
+                                Rejected
+                                @break
+                            @case(2)
+                                Accepted
+                                @break
+                            @case(3)
+                                Cancelled
+                                @break
+                            @case(4)
+                                Attending
+                                @break
+                            @case(5)
+                                Attended
+                                @break
+                            @default
+                                Unknown ({{ $registration->status }})
+                        @endswitch
+                        <br>
+                        @if(strlen($registration->payment_code) > 0)
+                            <b>Payment Code:</b> {{ $registration->payment_code }}<br>
+                        @endif
+                        @if(strlen($registration->remarks) > 0)
+                            <b>Remarks: </b> {{ $registration->remarks }}
+                        @endif
+                    </p>
+                    @if($registration->status > 1)
+                        <div class="btn-toolbar" role="toolbar">
+                            <div class="btn-group mr-2" role="group">
+                                <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
+                                    <i class="bi bi-box-arrow-in-right"></i> Check In
+                                </button>
+                            </div>
+                            <div class="btn-group mr-2" role="group">
+                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#checkOutModal">
+                                    <i class="bi bi-box-arrow-left"></i> Check Out
+                                </button>
+                            </div>
+                        </div>
+                    @elseif($registration->status == 1 && strlen($registration->payment_code) > 0)
+                        <div class="btn-toolbar" role="toolbar">
+                            <div class="btn-group mr-2" role="group">
+                                <a type="button" class="btn btn-primary text-white" href="/pay/{{ $registration->payment_code }}">
+                                    <i class="bi bi-credit-card"></i> Pay
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        @endforeach
         <div class="card mb-4">
             <div class="card-header h4 text-white @if($eligible_to_register) bg-success @else bg-danger @endif">
                 <i class="bi bi-calendar-plus"></i> Register to this Event
