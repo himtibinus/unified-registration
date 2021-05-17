@@ -227,7 +227,7 @@ class EventController extends Controller
         if ($event->slots - count($registrations) <= 0) $validation->eligible_to_register = false;
 
         // Return view
-        return view('event-details', ['event' => $event, 'user' => $user, 'registrations' => array_merge($registrations, $rejected), 'admin_or_committee' => $admin_or_committee, 'event_permissions' => $validation->event_permissions, 'eligible_to_register' => $validation->eligible_to_register]);
+        return view('event-details', ['event' => $event, 'user' => $user, 'registrations' => $registrations, 'rejected' => $rejected, 'admin_or_committee' => $admin_or_committee, 'event_permissions' => $validation->event_permissions, 'eligible_to_register' => $validation->eligible_to_register]);
     }
 
     /**
