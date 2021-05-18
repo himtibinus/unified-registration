@@ -454,7 +454,7 @@
                 }
             }
         };
-        xhr.send(params);
+        xhr.send();
     }
 
     setInterval(refreshToken, 15 * 60 * 1000);
