@@ -104,8 +104,8 @@
                     </select>
                 </div>
                 <div class="form-group mb-4">
-                    <label for="action-registration-status"><b>Automatically accept new participants?</b> (Current: {{($event->auto_accept) ? 'Yes' : 'No'}})</label><br>
-                    <select name="action-registration-status" id="action-registration-status" @if(!$role->admin) disabled @endif>
+                    <label for="action-registration-auto_accept"><b>Automatically accept new participants?</b> (Current: {{($event->auto_accept) ? 'Yes' : 'No'}})</label><br>
+                    <select name="action-registration-auto_accept" id="action-registration-auto_accept" @if(!$role->admin) disabled @endif>
                         <option value="-1">Unchanged</option>
                         <option value="enabled">Yes</option>
                         <option value="disabled">No</option>
