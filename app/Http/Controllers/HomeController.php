@@ -25,4 +25,13 @@ class HomeController extends Controller
     {
         return view('home');
     }
+
+    /**
+     * Get a new CSRF token and ensure that the session is active for more than 2 hours
+     */
+    public function refreshToken(Request $request)
+    {
+        session()->regenerate();
+        return response()->json(["token" => csrf_token()]);
+    }
 }

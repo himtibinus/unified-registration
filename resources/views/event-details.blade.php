@@ -319,6 +319,7 @@
 
 <script src="/js/qrcode.min.js"></script>
 <script>
+    var csrfToken = "{!! csrf_token() !!}";
     var isMemberValid = [];
     var isReserveMemberValid = [];
     function validateUser(input){
@@ -326,7 +327,7 @@
         var xhr = new XMLHttpRequest();
         var params = JSON.stringify({ email: selected, allowSelf: false, eventId:{{ $event->id }} });
         xhr.open("POST", "/getuserdetails");
-        xhr.setRequestHeader("X-CSRF-TOKEN", "{!! csrf_token() !!}");
+        xhr.setRequestHeader("X-CSRF-TOKEN", csrfToken);
         xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
         // xhr.setRequestHeader("Content-length", params.length);
         // xhr.setRequestHeader("Connection", "close");
@@ -429,6 +430,34 @@
         xhr.open("POST", "/attendance/" + registrationId, true);
         xhr.send(formData);
     }
+    function refreshToken(){
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/refreshtoken")
+        xhr.onload = function() {
+            if (xhr.status != 200) {
+                console.error("Unable to refresh the CSRF token");
+            } else {
+                // Check whether the output is JSON
+                try {
+                    var json = JSON.parse(xhr.responseText);
+                    // Check if the JSON data displays an error
+                    if (json.error) throw json.error;
+                    // Refresh token
+                    csrfToken = json.token;
+                    try {
+                        document.querySelector("[name='_token']").value = json.token;
+                    } catch (f) {
+                        var i = 0;
+                    }
+                } catch (e) {
+                    console.error('Error: ' + e);
+                }
+            }
+        };
+        xhr.send(params);
+    }
+
+    setInterval(refreshToken, 15 * 60 * 1000);
 </script>
 
 @endsection

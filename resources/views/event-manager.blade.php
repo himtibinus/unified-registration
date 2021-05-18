@@ -266,11 +266,13 @@
 </div>
 
 <script>
+    var csrfToken = "{!! csrf_token() !!}";
+
     function requestParticipantDetails(email){
         var xhr = new XMLHttpRequest();
         var params = JSON.stringify({ email: email, allowSelf: true, eventId:{{ $event->id }} });
         xhr.open("POST", "/getuserdetails");
-        xhr.setRequestHeader("X-CSRF-TOKEN", "{!! csrf_token() !!}");
+        xhr.setRequestHeader("X-CSRF-TOKEN", csrfToken);
         xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
         // xhr.setRequestHeader("Content-length", params.length);
         // xhr.setRequestHeader("Connection", "close");
@@ -325,5 +327,30 @@
         var modal = new bootstrap.Modal(document.getElementById("participantDetailsModal"));
         modal.show();
     }
+
+    function refreshToken(){
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/refreshtoken")
+        xhr.onload = function() {
+            if (xhr.status != 200) {
+                console.error("Unable to refresh the CSRF token");
+            } else {
+                // Check whether the output is JSON
+                try {
+                    var json = JSON.parse(xhr.responseText);
+                    // Check if the JSON data displays an error
+                    if (json.error) throw json.error;
+                    // Refresh token
+                    csrfToken = json.token;
+                    document.querySelector("[name='_token']").value = json.token;
+                } catch (e) {
+                    console.error('Error: ' + e);
+                }
+            }
+        };
+        xhr.send(params);
+    }
+
+    setInterval(refreshToken, 15 * 60 * 1000);
 </script>
 @endsection
