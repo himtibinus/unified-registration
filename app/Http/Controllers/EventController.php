@@ -324,6 +324,10 @@ class EventController extends Controller
                     if ($value == "private") DB::table('events')->where('id', $id)->update(['private' => 1]);
                     else if ($value == "public") DB::table('events')->where('id', $id)->update(['private' => 0]);
                 break;
+                case "action-registration-auto_accept":
+                    if ($value == "enabled") DB::table('events')->where('id', $id)->update(['auto_accept' => 1]);
+                    else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['auto_accept' => 0]);
+                break;
                 case "action-update-seats":
                     if ($value > 0) DB::table('events')->where('id', $id)->update(['seats' => $value]);
                 break;
@@ -560,7 +564,7 @@ class EventController extends Controller
 
             // Assign the database template
             $query = [];
-            $draft = ["event_id" => $event_id, "status" => 0, "payment_code" => $payment_code, "team_id" => $team_id, "ticket_id" => null, "remarks" => null];
+            $draft = ["event_id" => $event_id, "status" => (($event->auto_accept == true) ? 2 : 0), "payment_code" => $payment_code, "team_id" => $team_id, "ticket_id" => null, "remarks" => null];
 
             // Assign the User ID of the team leader
             $tempdetails = json_decode(json_encode(Auth::user()), true);
@@ -607,7 +611,7 @@ class EventController extends Controller
             DB::table("registration")->insert($query);
         } else {
             // Assign the participant
-            DB::table("registration")->insert(["ticket_id" => Auth::user()->id, "event_id" => $event_id, "status" => 0, "payment_code" => $payment_code]);
+            DB::table("registration")->insert(["ticket_id" => Auth::user()->id, "event_id" => $event_id, "status" => (($event->auto_accept == true) ? 2 : 0), "payment_code" => $payment_code]);
         }
 
         // Send Email for Payment

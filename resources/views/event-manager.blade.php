@@ -104,6 +104,14 @@
                     </select>
                 </div>
                 <div class="form-group mb-4">
+                    <label for="action-registration-status"><b>Automatically accept new participants?</b> (Current: {{($event->auto_accept) ? 'Yes' : 'No'}})</label><br>
+                    <select name="action-registration-status" id="action-registration-status" @if(!$role->admin) disabled @endif>
+                        <option value="-1">Unchanged</option>
+                        <option value="enabled">Yes</option>
+                        <option value="disabled">No</option>
+                    </select>
+                </div>
+                <div class="form-group mb-4">
                     <label for="action-update-seats">{{ __('Maximum Available Seats') }}</label>
                     <input name="action-update-seats" id="action-update-seats" type="number" value="{{ $event->slots }}" min="1" class="form-control" @if(!$role->admin) disabled @else required @endif>
                 </div>
