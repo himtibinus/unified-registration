@@ -38,13 +38,13 @@ class EventController extends Controller
             $select = DB::table('events')->where('id', $eventId)->first();
             if ($select){
                 $select = DB::table('event_roles')->where('event_id', $eventId);
-                $query = $select->where('system_role', 'role.administrator')->first();
+                $query = $select->where('user_id', $userId)->where('system_role', 'role.administrator')->first();
                 if ($query){
                     $admin = true;
                     $committee = true;
                 }
                 $select = DB::table('event_roles')->where('event_id', $eventId);
-                $query = $select->where('system_role', 'role.committee')->first();
+                $query = $select->where('user_id', $userId)->where('system_role', 'role.committee')->first();
                 if ($query){
                     $committee = true;
                 }
