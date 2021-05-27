@@ -90,20 +90,19 @@
                                 <b>Remarks: </b> {{ $registration->remarks }}
                             @endif
                         </p>
-                        @if($registration->status > 1)
-                            <div class="btn-toolbar" role="toolbar">
-                                <div class="btn-group mr-2" role="group">
-                                    <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
-                                        <i class="bi bi-box-arrow-in-right"></i> Check In
-                                    </button>
-                                </div>
-                                <div class="btn-group mr-2" role="group">
-                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#checkOutModal">
-                                        <i class="bi bi-box-arrow-left"></i> Check Out
-                                    </button>
-                                </div>
+                        <div class="btn-toolbar" role="toolbar">
+                            <div class="btn-group mr-2" role="group">
+                                <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
+                                    <i class="bi bi-box-arrow-in-right"></i> Check In
+                                </button>
                             </div>
-                        @elseif($registration->status == 1 && strlen($registration->payment_code) > 0)
+                            <div class="btn-group mr-2" role="group">
+                                <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
+                                    <i class="bi bi-box-arrow-left"></i> Check Out
+                                </button>
+                            </div>
+                        </div>
+                        @if($registration->status == 1 && strlen($registration->payment_code) > 0)
                             <div class="btn-toolbar" role="toolbar">
                                 <div class="btn-group mr-2" role="group">
                                     <a type="button" class="btn btn-primary text-white" href="/pay/{{ $registration->payment_code }}">
@@ -157,20 +156,7 @@
                             <b>Remarks: </b> {{ $registration->remarks }}
                         @endif
                     </p>
-                    @if($registration->status > 1)
-                        <div class="btn-toolbar" role="toolbar">
-                            <div class="btn-group mr-2" role="group">
-                                <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
-                                    <i class="bi bi-box-arrow-in-right"></i> Check In
-                                </button>
-                            </div>
-                            <div class="btn-group mr-2" role="group">
-                                <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#checkOutModal">
-                                    <i class="bi bi-box-arrow-left"></i> Check Out
-                                </button>
-                            </div>
-                        </div>
-                    @elseif($registration->status == 1 && strlen($registration->payment_code) > 0)
+                    @if($registration->status == 1 && strlen($registration->payment_code) > 0)
                         <div class="btn-toolbar" role="toolbar">
                             <div class="btn-group mr-2" role="group">
                                 <a type="button" class="btn btn-primary text-white" href="/pay/{{ $registration->payment_code }}">
@@ -308,20 +294,48 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-            ...
+                <input type="hidden" name="check_out_registration_id">
+                <div class="form-group mb-4">
+                    <label for="token">Attendance Token<b class="text-danger">*</b></label>
+                    <input type="number" class="form-control" name="token" id="token" required>
+                    <span role="alert" id="token_validation"></span>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-warning">Confirm</button>
+                <button type="button" class="btn btn-warning" id="checkOutModalConfirm" onClick="checkOut()">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Check Out Success Modal -->
+<div class="modal fade" id="checkOutSuccessModal" tabindex="-1" aria-labelledby="checkOutSuccessModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="mx-auto text-center">
+                    <h1 class="display-1"><i class="bi bi-check-circle-fill text-success"></i></h1>
+                    <h4>Thank You for Attending!</h4>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p>Timestamp: <span id="checkOutSuccessTimestamp"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
 <script src="/js/qrcode.min.js"></script>
+<script src="/js/countdown.min.js"></script>
 <script>
     var csrfToken = "{!! csrf_token() !!}";
     var isMemberValid = [];
     var isReserveMemberValid = [];
+    var seats = {{ $event->seats }};
+    var checkOutModal = new bootstrap.Modal(document.getElementById("checkOutModal"));
     function validateUser(input){
         var selected = document.getElementById(input).value;
         var xhr = new XMLHttpRequest();
@@ -413,7 +427,10 @@
         var formData = new FormData();
         formData.append("_token", document.querySelector('meta[name="csrf-token"]').content);
         xhr.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
+            if (xhr.status == 401){
+                // Use Check Out modal instead
+                checkOutInit(registrationId);
+            } else if (xhr.status == 200) {
                 // Set up links
                 var response = JSON.parse(this.responseText);
 
@@ -429,6 +446,69 @@
         };
         xhr.open("POST", "/attendance/" + registrationId, true);
         xhr.send(formData);
+    }
+    function checkOutInit(registrationId){
+        document.querySelector('input[name="check_out_registration_id"]').value = registrationId;
+        checkOutModal.show();
+    }
+    function checkOut(){
+        var formData = new FormData();
+        formData.append("_token", document.querySelector('meta[name="csrf-token"]').content);
+        formData.append("token", document.querySelector('input[name="token"]').value);
+        var registrationId = document.querySelector('input[name="check_out_registration_id"]').value
+        var trials = 1;
+
+        // Disable modal confirm button
+        document.querySelector('input[name="token"]').disabled = true;
+        document.getElementById("checkOutModalConfirm").disabled = true;
+
+        function checkOutRequest(){
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState != 4) return;
+                if (xhr.status == 200) {
+                    // Set up links
+                    var response = JSON.parse(this.responseText);
+
+                    document.getElementById("checkOutSuccessTimestamp").textContent = response.timestamp;
+
+                    checkOutModal.hide();
+
+                    var modal = new bootstrap.Modal(document.getElementById("checkOutSuccessModal"));
+                    modal.show();
+                } else if (xhr.readyState == 4 && (xhr.status == 503 || xhr.status == 419)) {
+                    // If this is Laravel's "Page Expired" error, try requesting a new CSRF token
+                    if (xhr.status == 419) refreshToken();
+
+                    // Delay Mode
+                    var delay = Math.max(15000, Math.floor(Math.random() * 1000 * seats / 3 / trials));
+
+                    var element = document.getElementById("token_validation");
+                    element.style.display = "block";
+                    element.style.color = "#249ef2";
+                    element.innerHTML = "<strong>The server is currently busy. Trying again in <span id='checkOutCountdown'></span></strong>";
+
+                    var nextCheck = new Date();
+                    nextCheck.setMilliseconds(nextCheck.getMilliseconds() + delay);
+
+                    var timerId = countdown(nextCheck, function(ts) {
+                        document.getElementById('checkOutCountdown').innerHTML = ts.toHTML("strong");
+                    }, countdown.MINUTES|countdown.SECONDS);
+
+                    trials++;
+                    setTimeout(function (){
+                        window.clearInterval(timerId);
+                        checkOutRequest();
+                    }, delay);
+                } else {
+                    setErrorMessage("token", xhr.responseText);
+                }
+            };
+            xhr.open("POST", "/attendance/" + registrationId, true);
+            xhr.send(formData);
+        }
+
+        checkOutRequest();
     }
     function refreshToken(){
         var xhr = new XMLHttpRequest();

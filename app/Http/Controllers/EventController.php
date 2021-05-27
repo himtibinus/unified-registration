@@ -398,7 +398,7 @@ class EventController extends Controller
         $is_exit = $event->attendance_is_exit;
 
         // Check database
-        $attendance = DB::table('attendance')->where('registration_id',$request->registration_id);
+        $attendance = DB::table('attendance')->where('registration_id',$id);
         $timestamp = Carbon::now();
 
         $exist = $attendance->first();
@@ -409,12 +409,14 @@ class EventController extends Controller
             if (strlen($token) == 0 || $token != '' . $event->totp_key) return response('Incorrect token', 401);
 
             if ($exist){
-                // Record exit attendance
-                $attendance->update([
-                    'exit_timestamp' => $timestamp,
-                    'remarks' => 'Attended'
-                ]);
-                DB::table('registration')->where('id',$id)->update(['status' => 5]);
+                if (strlen($exist->entry_timestamp) > 0){
+                    // Record exit attendance
+                    $attendance->update([
+                        'exit_timestamp' => $timestamp,
+                        'remarks' => 'Attended'
+                    ]);
+                    DB::table('registration')->where('id',$id)->update(['status' => 5]);
+                }
             } else {
                 // Record new attendance
                 $attendance->insert([
@@ -433,6 +435,11 @@ class EventController extends Controller
             ]);
             DB::table('registration')->where('id',$id)->update(['status' => 4]);
         }
+        // return response()->json([
+        //     'timestamp' => $timestamp,
+        //     'attendanceType' => ($is_exit ? 'exit' : 'entrance'),
+        //     'url' => $event->url_link
+        // ])->setStatusCode(503);
         return response()->json([
             'timestamp' => $timestamp,
             'attendanceType' => ($is_exit ? 'exit' : 'entrance'),
