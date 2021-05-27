@@ -433,15 +433,7 @@
             } else if (xhr.status == 200) {
                 // Set up links
                 var response = JSON.parse(this.responseText);
-
-                document.getElementById("checkInModalLink").textContent = response.url;
-                document.getElementById("checkInTimestamp").textContent = response.timestamp;
-                document.getElementById("checkInConfirm").setAttribute('href', response.url);
-
-                new QRCode(document.getElementById("checkInQRCanvas"), response.url);
-
-                var modal = new bootstrap.Modal(document.getElementById("checkInModal"));
-                modal.show();
+                handleSuccessResponse(response);
             }
         };
         xhr.open("POST", "/attendance/" + registrationId, true);
@@ -469,13 +461,9 @@
                 if (xhr.status == 200) {
                     // Set up links
                     var response = JSON.parse(this.responseText);
-
-                    document.getElementById("checkOutSuccessTimestamp").textContent = response.timestamp;
-
                     checkOutModal.hide();
 
-                    var modal = new bootstrap.Modal(document.getElementById("checkOutSuccessModal"));
-                    modal.show();
+                    handleSuccessResponse(response);
                 } else if (xhr.readyState == 4 && (xhr.status == 503 || xhr.status == 419)) {
                     // If this is Laravel's "Page Expired" error, try requesting a new CSRF token
                     if (xhr.status == 419) refreshToken();
@@ -509,6 +497,23 @@
         }
 
         checkOutRequest();
+    }
+    function handleSuccessResponse(response){
+        if (response.attendanceType == "entrance"){
+            document.getElementById("checkInModalLink").textContent = response.url;
+            document.getElementById("checkInTimestamp").textContent = response.timestamp;
+            document.getElementById("checkInConfirm").setAttribute('href', response.url);
+
+            new QRCode(document.getElementById("checkInQRCanvas"), response.url);
+
+            var modal = new bootstrap.Modal(document.getElementById("checkInModal"));
+            modal.show();
+        } else {
+            document.getElementById("checkOutSuccessTimestamp").textContent = response.timestamp;
+
+            var modal = new bootstrap.Modal(document.getElementById("checkOutSuccessModal"));
+            modal.show();
+        }
     }
     function refreshToken(){
         var xhr = new XMLHttpRequest();
