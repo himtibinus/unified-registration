@@ -11,7 +11,7 @@
             <h5 class="card-title">{{ $event->kicker }}</h5>
             <h5 class="card-title fw-normal">{{ $event->name }}</h5>
         @else
-            <h5 class="card-title">{{ $event->name }}</h5>
+            <h5 class="card-title">{{ $event->name }} @if($event->private)<span class="badge rounded-pill bg-dark text-warning">Private</span>@endif</h5>
         @endif
         <p class="card-text h6">{{ $event->location }}</p>
         <div class="btn-toolbar" role="toolbar">
