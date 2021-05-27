@@ -184,6 +184,7 @@ class EventController extends Controller
         $rejected = [];
         $event_permissions = null;
         $user_properties = null;
+        $event->late = new DateTime($event->date) < new DateTime(date("Y-m-d"));
 
         // Check whether the user has been logged in and registered
         if (Auth::check()){
@@ -409,6 +410,8 @@ class EventController extends Controller
         $attendance = DB::table('attendance')->where('registration_id',$id);
         $timestamp = Carbon::now();
 
+        $event->late = new DateTime($event->date) < new DateTime(date("Y-m-d"));
+
         $exist = $attendance->first();
 
         if ($is_exit){
@@ -442,7 +445,7 @@ class EventController extends Controller
                     'remarks' => 'On Time'
                 ]);
                 DB::table('registration')->where('id',$id)->update(['status' => 4]);
-            } else {
+            } else if ($event->late) {
                 // Record new attendance
                 DB::table('attendance')->insert([
                     'entry_timestamp' => $timestamp,

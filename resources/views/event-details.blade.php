@@ -99,7 +99,7 @@
                                         </button>
                                     </div>
                                 @endif
-                            @else
+                            @elseif ($event->attendance_opened || $event->late)
                                 <div class="btn-group mr-2" role="group">
                                     <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
                                         <i class="bi bi-box-arrow-in-right"></i> Check In
