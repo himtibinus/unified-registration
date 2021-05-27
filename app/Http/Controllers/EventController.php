@@ -262,6 +262,14 @@ class EventController extends Controller
         // Gather the data
         $data = DB::table('registration')->select('registration.*', 'attendance.entry_timestamp', 'attendance.exit_timestamp', 'users.name', 'users.email', 'users.verified', 'users.email_verified_at', 'users.university_id', 'users.created_at', 'users.updated_at')->join('users', 'users.id', 'registration.ticket_id')->join('attendance', 'registration.id', '=', 'attendance.registration_id', 'left outer')->where('event_id', $id)->get();
 
+        $event->current_seats = count($data);
+        $event->attending = 0;
+        $event->attended = 0;
+        foreach ($data as $registration){
+            if ($registration->status == 1) $event->current_seats--;
+            if ($registration->status == 4) $event->attending++;
+            if ($registration->status == 5) $event->attended++;
+        }
         // Return view
         return view('event-manager', ['event' => $event, 'registrations' => $data, 'role' => $check]);
     }

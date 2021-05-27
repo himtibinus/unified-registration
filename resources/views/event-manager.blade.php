@@ -12,6 +12,27 @@
         @endif
         <div class="card mb-4">
             <div class="card-header h4 text-white bg-primary">
+                <i class="bi bi-info-circle"></i> Summary
+            </div>
+            <div class="card-body text-dark">
+                <div class="row">
+                    <div class="col-12">
+                        <p class="h4 font-700">Seats</p>
+                        <p class="display-4">{{ $event->current_seats }}/{{ $event->seats }}</p>
+                    </div>
+                    <div class="col-12">
+                        <p class="h4 font-700">Attendance</p>
+                        <p class="display-4">{{ $event->attending }}/{{ $event->attended }}</p>
+                    </div>
+                    <div class="col-12">
+                        <p class="h4 font-700">Event Token</p>
+                        <p class="display-4">{{ $event->totp_key }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mb-4">
+            <div class="card-header h4 text-white bg-primary">
                 <i class="bi bi-calendar-date"></i> Event Details
             </div>
             <div class="card-body text-dark">
@@ -113,7 +134,7 @@
                 </div>
                 <div class="form-group mb-4">
                     <label for="action-update-seats">{{ __('Maximum Available Seats') }}</label>
-                    <input name="action-update-seats" id="action-update-seats" type="number" value="{{ $event->slots }}" min="1" class="form-control" @if(!$role->admin) disabled @else required @endif>
+                    <input name="action-update-seats" id="action-update-seats" type="number" value="{{ $event->seats }}" min="1" class="form-control" @if(!$role->admin) disabled @else required @endif>
                 </div>
                 <div class="form-group mb-4">
                     <label for="action-update-slots">{{ __('Maximum Tickets per User') }}</label>
