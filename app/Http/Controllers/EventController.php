@@ -400,7 +400,7 @@ class EventController extends Controller
 
         // Check event
         $event = DB::table('events')->where('id', $registration->event_id)->first();
-        if (!$event->attendance_opened) return response('Attendance period has been closed', 403);
+        if (!$event->attendance_opened && $event->is_exit) return response('Attendance period has been closed', 403);
 
         // Check attendance type
         $is_exit = $event->attendance_is_exit;
@@ -420,8 +420,7 @@ class EventController extends Controller
                 if (strlen($exist->entry_timestamp) > 0){
                     // Record exit attendance
                     $attendance->update([
-                        'exit_timestamp' => $timestamp,
-                        'remarks' => 'Attended'
+                        'exit_timestamp' => $timestamp
                     ]);
                     DB::table('registration')->where('id',$id)->update(['status' => 5]);
                 }
@@ -435,13 +434,23 @@ class EventController extends Controller
                 DB::table('registration')->where('id',$id)->update(['status' => 4]);
             }
         } else if (!$exist) {
-            // Record new attendance
-            DB::table('attendance')->insert([
-                'entry_timestamp' => $timestamp,
-                'registration_id' => $id,
-                'remarks' => 'Attending'
-            ]);
-            DB::table('registration')->where('id',$id)->update(['status' => 4]);
+            if ($event->attendance_opened){
+                // Record new attendance
+                DB::table('attendance')->insert([
+                    'entry_timestamp' => $timestamp,
+                    'registration_id' => $id,
+                    'remarks' => 'On Time'
+                ]);
+                DB::table('registration')->where('id',$id)->update(['status' => 4]);
+            } else {
+                // Record new attendance
+                DB::table('attendance')->insert([
+                    'entry_timestamp' => $timestamp,
+                    'registration_id' => $id,
+                    'remarks' => 'Late'
+                ]);
+                DB::table('registration')->where('id',$id)->update(['status' => 4]);
+            }
         }
         // return response()->json([
         //     'timestamp' => $timestamp,

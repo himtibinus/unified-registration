@@ -91,16 +91,21 @@
                             @endif
                         </p>
                         <div class="btn-toolbar" role="toolbar">
-                            <div class="btn-group mr-2" role="group">
-                                <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
-                                    <i class="bi bi-box-arrow-in-right"></i> Check In
-                                </button>
-                            </div>
-                            <div class="btn-group mr-2" role="group">
-                                <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
-                                    <i class="bi bi-box-arrow-left"></i> Check Out
-                                </button>
-                            </div>
+                            @if($event->attendance_is_exit)
+                                @if($event->attendance_opened)
+                                    <div class="btn-group mr-2" role="group">
+                                        <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
+                                            <i class="bi bi-box-arrow-left"></i> Check Out
+                                        </button>
+                                    </div>
+                                @endif
+                            @else
+                                <div class="btn-group mr-2" role="group">
+                                    <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
+                                        <i class="bi bi-box-arrow-in-right"></i> Check In
+                                    </button>
+                                </div>
+                            @endif
                         </div>
                         @if($registration->status == 1 && strlen($registration->payment_code) > 0)
                             <div class="btn-toolbar" role="toolbar">
