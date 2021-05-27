@@ -16,15 +16,15 @@
             </div>
             <div class="card-body text-dark">
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-12 col-sm-4 col-xl-12">
                         <p class="h4 font-700">Seats</p>
                         <p class="display-4">{{ $event->current_seats }}/{{ $event->seats }}</p>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 col-sm-4 col-xl-12">
                         <p class="h4 font-700">Attendance</p>
                         <p class="display-4">{{ $event->attending }}/{{ $event->attended }}</p>
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 col-sm-4 col-xl-12">
                         <p class="h4 font-700">Event Token</p>
                         <p class="display-4">{{ $event->totp_key }}</p>
                     </div>
