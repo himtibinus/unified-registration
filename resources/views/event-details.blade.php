@@ -432,6 +432,7 @@
         var formData = new FormData();
         formData.append("_token", document.querySelector('meta[name="csrf-token"]').content);
         xhr.onreadystatechange = function() {
+            if (xhr.readyState != 4) return;
             if (xhr.status == 401){
                 // Use Check Out modal instead
                 checkOutInit(registrationId);
