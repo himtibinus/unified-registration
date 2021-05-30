@@ -90,8 +90,18 @@
                                 <b>Remarks: </b> {{ $registration->remarks }}
                             @endif
                         </p>
+                        <div class="alert alert-info" id="enableNotificationsBanner">
+                            Please <b>enable notifications</b> so we can let you know when the Check In and Check Out process has been successful.
+                        </div>
+                        <div class="btn-toolbar mb-2" role="toolbar" id="enableNotificationsButton" style="display:none">
+                            <div class="btn-group mr-2" role="group">
+                                <button type="button" onClick="registerNotification()" class="btn btn-info">
+                                    <i class="bi bi-bell"></i> Enable Notifications
+                                </button>
+                            </div>
+                        </div>
                         <div class="btn-toolbar" role="toolbar">
-                            @if($event->attendance_is_exit)
+                            {{-- @if($event->attendance_is_exit)
                                 @if($event->attendance_opened)
                                     <div class="btn-group mr-2" role="group">
                                         <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
@@ -105,7 +115,17 @@
                                         <i class="bi bi-box-arrow-in-right"></i> Check In
                                     </button>
                                 </div>
-                            @endif
+                            @endif --}}
+                            <div class="btn-group mr-2" role="group">
+                                <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
+                                    <i class="bi bi-box-arrow-in-right"></i> Check In
+                                </button>
+                            </div>
+                            <div class="btn-group mr-2" role="group">
+                                <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
+                                    <i class="bi bi-box-arrow-left"></i> Check Out
+                                </button>
+                            </div>
                         </div>
                         @if($registration->status == 1 && strlen($registration->payment_code) > 0)
                             <div class="btn-toolbar" role="toolbar">
@@ -320,7 +340,7 @@
             <div class="modal-header">
                 <div class="mx-auto text-center">
                     <h1 class="display-1"><i class="bi bi-check-circle-fill text-success"></i></h1>
-                    <h4>Thank You for Attending!</h4>
+                    <h4>Thank You for Participating!</h4>
                 </div>
             </div>
             <div class="modal-body">
@@ -439,6 +459,8 @@
             } else if (xhr.status == 200) {
                 // Set up links
                 var response = JSON.parse(this.responseText);
+                if ("Notification" in window && Notification.permission == "granted") var notification = new Notification("Check in successful for {{ $event->name }}.");
+                else if ("webkitNotifications" in window && window.webkitNotifications.checkPermission() == 0) window.webkitNotifications.createNotification(null, "Check in successful for {{ $event->name }}.", "HIMTI Registration").show();
                 handleSuccessResponse(response);
             }
         };
@@ -468,6 +490,8 @@
                     // Set up links
                     var response = JSON.parse(this.responseText);
                     checkOutModal.hide();
+                    if ("Notification" in window && Notification.permission == "granted") var notification = new Notification("Check out successful for {{ $event->name }}. Thanks for participating!");
+                    else if ("webkitNotifications" in window && window.webkitNotifications.checkPermission() == 0) window.webkitNotifications.createNotification(null, "Check out successful for {{ $event->name }}. Thanks for participating!", "HIMTI Registration").show();
 
                     handleSuccessResponse(response);
                 } else if (xhr.readyState == 4 && (xhr.status == 503 || xhr.status == 419)) {
@@ -547,8 +571,37 @@
         };
         xhr.send();
     }
-
     setInterval(refreshToken, 15 * 60 * 1000);
+
+    function registerNotification(){
+        if ("Notification" in window && Notification.permission != "granted") {
+            Notification.requestPermission().then(function (permission) {
+                if (permission == "granted") {
+                    document.getElementById("enableNotificationsBanner").textContent = "You will be notified when the Check In and Check Out process has been successful.";
+                    document.getElementById("enableNotificationsButton").style.display = "none";
+                    var notification = new Notification("You will be notified when the Check In and Check Out process has been successful.");
+                }
+            });
+        } else if ("webkitNotifications" in window && window.webkitNotifications.checkPermission() != 0){
+            window.webkitNotifications.requestPermission(function (){
+              if (window.webkitNotifications.checkPermission() == "granted") {
+                  document.getElementById("enableNotificationsBanner").textContent = "You will be notified when the Check In and Check Out process has been successful.";
+                  document.getElementById("enableNotificationsButton").style.display = "none";
+                  window.webkitNotifications.createNotification(null, "You will be notified when the Check In and Check Out process has been successful.", "HIMTI Registration").show();
+              }
+            })
+        } else {
+            alert("This browser does not support desktop notifications.");
+        }
+    }
+
+    if ("Notification" in window){
+        if (Notification.permission == "granted") document.getElementById("enableNotificationsBanner").textContent = "You will be notified when the Check In and Check Out process has been successful.";
+        else document.getElementById("enableNotificationsButton").style.display = "inline-block";
+    } else if ("webkitNotifications" in window){
+        if (window.webkitNotifications.checkPermission() == 0) document.getElementById("enableNotificationsBanner").textContent = "You will be notified when the Check In and Check Out process has been successful.";
+        else document.getElementById("enableNotificationsButton").style.display = "inline-block";
+    }
 </script>
 
 @endsection
