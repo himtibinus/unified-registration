@@ -410,7 +410,7 @@ class EventController extends Controller
         $attendance = DB::table('attendance')->where('registration_id',$id);
         $timestamp = Carbon::now();
 
-        $event->late = new DateTime($event->date) < new DateTime(date("Y-m-d"));
+        $event->late = new DateTime($event->date) < new DateTime(date("Y-m-d H:i:s"));
 
         $exist = $attendance->first();
 
