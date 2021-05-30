@@ -401,7 +401,7 @@ class EventController extends Controller
 
         // Check event
         $event = DB::table('events')->where('id', $registration->event_id)->first();
-        if (!$event->attendance_opened && $event->is_exit) return response('Attendance period has been closed', 403);
+        if (!$event->attendance_opened && $event->attendance_is_exit) return response('Attendance period has been closed', 403);
 
         // Check attendance type
         $is_exit = $event->attendance_is_exit;
