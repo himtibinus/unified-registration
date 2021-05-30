@@ -584,11 +584,11 @@
             });
         } else if ("webkitNotifications" in window && window.webkitNotifications.checkPermission() != 0){
             window.webkitNotifications.requestPermission(function (){
-              if (window.webkitNotifications.checkPermission() == "granted") {
-                  document.getElementById("enableNotificationsBanner").textContent = "You will be notified when the Check In and Check Out process has been successful.";
-                  document.getElementById("enableNotificationsButton").style.display = "none";
-                  window.webkitNotifications.createNotification(null, "You will be notified when the Check In and Check Out process has been successful.", "HIMTI Registration").show();
-              }
+                if (window.webkitNotifications.checkPermission() == "granted") {
+                    document.getElementById("enableNotificationsBanner").textContent = "You will be notified when the Check In and Check Out process has been successful.";
+                    document.getElementById("enableNotificationsButton").style.display = "none";
+                    window.webkitNotifications.createNotification(null, "You will be notified when the Check In and Check Out process has been successful.", "HIMTI Registration").show();
+                }
             })
         } else {
             alert("This browser does not support desktop notifications.");
@@ -601,6 +601,8 @@
     } else if ("webkitNotifications" in window){
         if (window.webkitNotifications.checkPermission() == 0) document.getElementById("enableNotificationsBanner").textContent = "You will be notified when the Check In and Check Out process has been successful.";
         else document.getElementById("enableNotificationsButton").style.display = "inline-block";
+    } else {
+        document.getElementById("enableNotificationsBanner").style.display = "none";
     }
 </script>
 
