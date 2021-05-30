@@ -36,14 +36,14 @@
                 </div>
             @else
                 @foreach($registeredEvents as $event)
-                    @component('components.event-card', ['event' => $event]);
+                    @component('components.event-card', ['event' => $event, 'type' => 'registeredEvents']);
                     @endcomponent
                 @endforeach
             @endif
             <hr>
             <h1 class="mb-4">Available Events</h1>
             @foreach($availableEvents as $event)
-                @component('components.event-card', ['event' => $event]);
+                @component('components.event-card', ['event' => $event, 'type' => 'availableEvents']);
                 @endcomponent
             @endforeach
         </div>
