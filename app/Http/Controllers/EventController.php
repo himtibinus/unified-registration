@@ -184,7 +184,7 @@ class EventController extends Controller
         $rejected = [];
         $event_permissions = null;
         $user_properties = null;
-        $event->late = new DateTime($event->date) < new DateTime(date("Y-m-d"));
+        $event->late = new DateTime($event->date) < new DateTime(date("Y-m-d H:i:s"));
 
         // Check whether the user has been logged in and registered
         if (Auth::check()){
