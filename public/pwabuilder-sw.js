@@ -10,9 +10,19 @@ self.addEventListener("message", (event) => {
   }
 });
 
+// Network-first cache for main pages
 workbox.routing.registerRoute(
   new RegExp('/*'),
-  new workbox.strategies.StaleWhileRevalidate({
+  new workbox.strategies.NetworkFirst({
     cacheName: CACHE
   })
 );
+
+// // Stale while revalidate cache for CSS and JS
+// workbox.routing.registerRoute(
+//   ({request}) => request.destination === 'script' ||
+//                  request.destination === 'style',
+//   new workbox.strategies.StaleWhileRevalidate({
+//     cacheName: 'css-and-js'
+//   })
+// );
