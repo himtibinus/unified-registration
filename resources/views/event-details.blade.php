@@ -101,7 +101,7 @@
                             </div>
                         </div>
                         <div class="btn-toolbar" role="toolbar">
-                            {{-- @if($event->attendance_is_exit)
+                            @if($event->attendance_is_exit)
                                 @if($event->attendance_opened)
                                     <div class="btn-group mr-2" role="group">
                                         <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
@@ -115,8 +115,8 @@
                                         <i class="bi bi-box-arrow-in-right"></i> Check In
                                     </button>
                                 </div>
-                            @endif --}}
-                            <div class="btn-group mr-2" role="group">
+                            @endif
+                            {{-- <div class="btn-group mr-2" role="group">
                                 <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
                                     <i class="bi bi-box-arrow-in-right"></i> Check In
                                 </button>
@@ -125,7 +125,7 @@
                                 <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
                                     <i class="bi bi-box-arrow-left"></i> Check Out
                                 </button>
-                            </div>
+                            </div> --}}
                         </div>
                         @if($registration->status == 1 && strlen($registration->payment_code) > 0)
                             <div class="btn-toolbar" role="toolbar">
