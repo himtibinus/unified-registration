@@ -282,7 +282,7 @@
     </div>
 </div>
 @if(strlen($event->description_public) > 0)
-    <div class="container mt-4">
+    <div class="container mt-4 text-break">
         <h1 class="display-4">Event Description</h1>
         @parsedown($event->description_public)
     </div>
