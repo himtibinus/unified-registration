@@ -25,6 +25,7 @@
             <h4>Team (Leader with {{ $event->team_members }} + {{ $event->team_members_reserve }} members)</h4>
         @endif
         <h4>Starts at <span id="eventDate" onLoad="adjustDate('eventDate')">{{ Carbon::parse($event->date) }}</span></h4>
+        <script>adjustDate('eventDate')</script>
         @if ($event->price < 2)
             <h4>Free of charge</h4>
         @else

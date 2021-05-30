@@ -7,6 +7,7 @@
     <img class="card-img-auto" src="{{ $event->cover_image }}" alt="Card image cap">
     <div class="card-body">
         <h6 id="card_{{ $event->id }}" onLoad="adjustDate('card_{{ $event->id }}')">{{ Carbon::parse($event->date) }}</h6>
+        <script>adjustDate('card_{{ $event->id }}')</script>
         @if(strlen($event->kicker) > 0)
             <h5 class="card-title">{{ $event->kicker }}</h5>
             <h5 class="card-title fw-normal">{{ $event->name }}</h5>
