@@ -300,7 +300,7 @@
             <div class="modal-body">
                 <p>Please visit the following link to continue</p>
                 <b id="checkInModalLink"></b>
-                <canvas id="checkInQRCanvas"></canvas>
+                <div id="checkInQRCanvas"></div>
                 <p>Timestamp: <span id="checkInTimestamp"></span></p>
             </div>
             <div class="modal-footer">
@@ -361,6 +361,7 @@
     var isMemberValid = [];
     var isReserveMemberValid = [];
     var seats = {{ $event->seats }};
+    var qrcode = new QRCode(document.getElementById("checkInQRCanvas"));
     var checkOutModal = new bootstrap.Modal(document.getElementById("checkOutModal"));
     function validateUser(input){
         var selected = document.getElementById(input).value;
@@ -535,7 +536,8 @@
             document.getElementById("checkInTimestamp").textContent = response.timestamp;
             document.getElementById("checkInConfirm").setAttribute('href', response.url);
 
-            new QRCode(document.getElementById("checkInQRCanvas"), response.url);
+            qrcode.clear();
+            qrcode.makeCode(response.url);
 
             var modal = new bootstrap.Modal(document.getElementById("checkInModal"));
             modal.show();
