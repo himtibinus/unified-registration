@@ -261,7 +261,7 @@ class EventController extends Controller
         }
 
         // Gather the data
-        $data = DB::table('registration')->select('registration.*', 'attendance.entry_timestamp', 'attendance.exit_timestamp', 'users.name', 'users.email', 'users.verified', 'users.email_verified_at', 'users.university_id', 'users.created_at', 'users.updated_at')->join('users', 'users.id', 'registration.ticket_id')->join('attendance', 'registration.id', '=', 'attendance.registration_id', 'left outer')->where('event_id', $id)->get();
+        $data = DB::table('registration')->select('registration.*', 'users.name', 'users.email', 'users.verified', 'users.email_verified_at', 'users.university_id', 'users.created_at', 'users.updated_at')->join('users', 'users.id', 'registration.ticket_id')->where('event_id', $id)->get();
 
         $event->current_seats = count($data);
         $event->attending = 0;
@@ -405,54 +405,28 @@ class EventController extends Controller
 
         // Check attendance type
         $is_exit = $event->attendance_is_exit;
-
-        // Check database
-        $attendance = DB::table('attendance')->where('registration_id',$id);
         $timestamp = Carbon::now();
-
         $event->late = new DateTime($event->date) < new DateTime(date("Y-m-d H:i:s"));
-
-        $exist = $attendance->first();
 
         if ($is_exit){
             // Get the exit token
             $token = $request->input('token');
             if (strlen($token) == 0 || $token != '' . $event->totp_key) return response('Incorrect token', 401);
 
-            if ($exist){
-                if (strlen($exist->entry_timestamp) > 0){
-                    // Record exit attendance
-                    $attendance->update([
-                        'exit_timestamp' => $timestamp
-                    ]);
-                    DB::table('registration')->where('id',$id)->update(['status' => 5]);
-                }
+            if (strlen($registration->check_out_timestamp) > 0){
+                // Record exit attendance
+                DB::table('registration')->where('id',$id)->update(['check_out_timestamp' => $timestamp, 'status' => 5]);
             } else {
                 // Record new attendance
-                $attendance->insert([
-                    'exit_timestamp' => $timestamp,
-                    'registration_id' => $id,
-                    'remarks' => 'Late'
-                ]);
-                DB::table('registration')->where('id',$id)->update(['status' => 4]);
+                DB::table('registration')->where('id',$id)->update(['check_out_timestamp' => $timestamp, 'status' => 4, 'remarks' => 'Late']);
             }
-        } else if (!$exist) {
+        } else if (strlen($registration->check_in_timestamp . $registration->check_out_timestamp) == 0) {
             if ($event->attendance_opened){
                 // Record new attendance
-                DB::table('attendance')->insert([
-                    'entry_timestamp' => $timestamp,
-                    'registration_id' => $id,
-                    'remarks' => 'On Time'
-                ]);
-                DB::table('registration')->where('id',$id)->update(['status' => 4]);
+                DB::table('registration')->where('id',$id)->update(['check_in_timestamp' => $timestamp, 'status' => 4, 'remarks' => 'On Time']);
             } else if ($event->late) {
                 // Record new attendance
-                DB::table('attendance')->insert([
-                    'entry_timestamp' => $timestamp,
-                    'registration_id' => $id,
-                    'remarks' => 'Late'
-                ]);
-                DB::table('registration')->where('id',$id)->update(['status' => 4]);
+                DB::table('registration')->where('id',$id)->update(['check_in_timestamp' => $timestamp, 'status' => 4, 'remarks' => 'Late']);
             }
         }
         // return response()->json([
