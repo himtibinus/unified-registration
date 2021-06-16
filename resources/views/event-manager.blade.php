@@ -163,7 +163,7 @@
                 </div>
                 <div class="form-group mb-4">
                     <label for="action-update-payment_link">{{ __('Payment URL') }}</label>
-                    <input name="action-update-payment_link" id="action-update-payment_link" type="url" value="{{ $event->payment_link }}" min="0" class="form-control" @if(!$role->admin) disabled @else required @endif>
+                    <input name="action-update-payment_link" id="action-update-payment_link" type="url" value="{{ $event->payment_link }}" min="0" class="form-control" @if(!$role->admin) disabled @endif>
                 </div>
             </div>
         </div>
