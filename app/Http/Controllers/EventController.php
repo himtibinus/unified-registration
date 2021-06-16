@@ -287,43 +287,46 @@ class EventController extends Controller
         // Make sure that it's an Admin (Higher Level)
         if (!$this->requiresLogin($request->path(), $id, true, false)) return redirect('home');
 
+        $force_change = false;
+        if ($request->has('flag-force-change') && $request->input('flag-force-change') == "checked") $force_change = true;
+
         foreach($request->all() as $key => $value) {
             if (Str::startsWith($key, "status-") && $value >= 0){
                 $key = substr($key, 7);
                 DB::table('registration')->where('id', $key)->update(['status' => $value]);
             } else if (Str::startsWith($key, "action-")) switch ($key){
                 case "action-update-kicker":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['kicker' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['kicker' => $value]);
                 break;
                 case "action-update-name":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['name' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['name' => $value]);
                 break;
                 case "action-update-date":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['date' => new DateTime($value)]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['date' => new DateTime($value)]);
                 break;
                 case "action-update-location":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['location' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['location' => $value]);
                 break;
                 case "action-update-price":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['price' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['price' => $value]);
                 break;
                 case "action-update-cover_image":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['cover_image' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['cover_image' => $value]);
                 break;
                 case "action-update-theme_color_foreground":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['theme_color_foreground' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['theme_color_foreground' => $value]);
                 break;
                 case "action-update-theme_color_background":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['theme_color_background' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['theme_color_background' => $value]);
                 break;
                 case "action-update-description_public":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['description_public' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['description_public' => $value]);
                 break;
                 case "action-update-description_pending":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['description_pending' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['description_pending' => $value]);
                 break;
                 case "action-update-description_private":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['description_private' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['description_private' => $value]);
                 break;
                 case "action-registration-status":
                     if ($value == "enabled") DB::table('events')->where('id', $id)->update(['opened' => 1]);
@@ -349,6 +352,9 @@ class EventController extends Controller
                 case "action-update-team_members_reserve":
                     if ($value > 0) DB::table('events')->where('id', $id)->update(['team_members_reserve' => $value]);
                 break;
+                case "action-update-payment_link":
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['payment_link' => $value]);
+                break;
                 case "action-attendance-status":
                     if ($value == "enabled") DB::table('events')->where('id', $id)->update(['attendance_opened' => 1]);
                     else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['attendance_opened' => 0]);
@@ -358,10 +364,10 @@ class EventController extends Controller
                     else if ($value == "exit") DB::table('events')->where('id', $id)->update(['attendance_is_exit' => 1]);
                 break;
                 case "action-update-url_link":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['url_link' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['url_link' => $value]);
                 break;
                 case "action-update-totp_key":
-                    if ($value != '') DB::table('events')->where('id', $id)->update(['totp_key' => $value]);
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['totp_key' => $value]);
                 break;
             }
             // Clear cache
@@ -616,9 +622,19 @@ class EventController extends Controller
         }
 
         // Send Email for Payment
-        if($event->price > 0) Mail::to(Auth::user()->email)->send(SendInvoice::createEmail((object) ["name" => Auth::user()->name, "event_name" => $event->name, "payment_code" => $payment_code, "total_price" => $event->price * $slots]));
+        // if($event->price > 0) Mail::to(Auth::user()->email)->send(SendInvoice::createEmail((object) ["name" => Auth::user()->name, "event_id" => $event->id, "user_id" => Auth::user()->id, "event_name" => $event->name, "payment_code" => $payment_code, "total_price" => $event->price * $slots]));
 
         // Return Response
+        if ($event->price > 0){
+            if (strlen($event->payment_link) > 0) return redirect($this->getPaymentLink($event, (object) ['payment_code' => $payment_code]));
+            else return redirect('/pay/' . $payment_code);
+        }
         return redirect('/events/' . $event_id);
+    }
+
+    public static function getPaymentLink($event, $registration){
+        $search = array("%NAME", "%EMAIL", "%PAYMENT_CODE", "%EVENT_ID");
+        $replace = array(Auth::user()->name, Auth::user()->email, $registration->payment_code, $event->id);
+        return str_replace($search, $replace, $event->payment_link);
     }
 }

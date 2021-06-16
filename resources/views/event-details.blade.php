@@ -31,7 +31,7 @@
         @else
             <h4>Rp. {{ $event->price }}</h4>
         @endif
-        <h4>You can only register @if($event->slots < 2) once. @else {{ $event->slots }} times. @endif</h4>
+        <h4>You can only register @if($event->slots < 2) once. @else up to {{ $event->slots }} times/slots. @endif</h4>
         <div class="btn-toolbar mb-4" role="toolbar">
             @if($admin_or_committee)
                 <div class="btn-group mr-2" role="group">
@@ -101,40 +101,45 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="btn-toolbar" role="toolbar">
-                            @if($event->attendance_is_exit)
-                                @if($event->attendance_opened)
+                        @if($registration->status == 0 && strlen($registration->payment_code) > 0)
+                            <div class="btn-toolbar" role="toolbar">
+                                <div class="btn-group mr-2" role="group">
+                                    @if(strlen($event->payment_link) > 0)
+                                        <a type="button" class="btn btn-primary text-white" href="{{ App\Http\Controllers\EventController::getPaymentLink($event, $registration) }}">
+                                    @else
+                                        <a type="button" class="btn btn-primary text-white" href="/pay/{{ $registration->payment_code }}">
+                                    @endif
+                                        <i class="bi bi-credit-card"></i> Pay
+                                    </a>
+                                </div>
+                            </div>
+                        @else
+                            <div class="btn-toolbar" role="toolbar">
+                                @if($event->attendance_is_exit)
+                                    @if($event->attendance_opened)
+                                        <div class="btn-group mr-2" role="group">
+                                            <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
+                                                <i class="bi bi-box-arrow-left"></i> Check Out
+                                            </button>
+                                        </div>
+                                    @endif
+                                @elseif ($event->attendance_opened || $event->late)
                                     <div class="btn-group mr-2" role="group">
-                                        <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
-                                            <i class="bi bi-box-arrow-left"></i> Check Out
+                                        <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
+                                            <i class="bi bi-box-arrow-in-right"></i> Check In
                                         </button>
                                     </div>
                                 @endif
-                            @elseif ($event->attendance_opened || $event->late)
-                                <div class="btn-group mr-2" role="group">
+                                {{-- <div class="btn-group mr-2" role="group">
                                     <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
                                         <i class="bi bi-box-arrow-in-right"></i> Check In
                                     </button>
                                 </div>
-                            @endif
-                            {{-- <div class="btn-group mr-2" role="group">
-                                <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
-                                    <i class="bi bi-box-arrow-in-right"></i> Check In
-                                </button>
-                            </div>
-                            <div class="btn-group mr-2" role="group">
-                                <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
-                                    <i class="bi bi-box-arrow-left"></i> Check Out
-                                </button>
-                            </div> --}}
-                        </div>
-                        @if($registration->status == 1 && strlen($registration->payment_code) > 0)
-                            <div class="btn-toolbar" role="toolbar">
                                 <div class="btn-group mr-2" role="group">
-                                    <a type="button" class="btn btn-primary text-white" href="/pay/{{ $registration->payment_code }}">
-                                        <i class="bi bi-credit-card"></i> Pay
-                                    </a>
-                                </div>
+                                    <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
+                                        <i class="bi bi-box-arrow-left"></i> Check Out
+                                    </button>
+                                </div> --}}
                             </div>
                         @endif
                     </div>
@@ -227,6 +232,10 @@
                                     <input type="hidden" name="event_id" value="{{ $event->id }}">
                                     @if($event->slots - $registrations_approved == 1)
                                         <input type="hidden" name="slots" value="1">
+                                        <h1>Total: Rp {{$event->price}}</h1>
+                                        @if($event->price > 0)
+                                            <p class="text text-danger fw-bold">You will be redirected to our payment form.</p>
+                                        @endif
                                         <p class="text mb-4 fw-bold">By registering to this event, you agree to our rules and regulations.</p>
                                         <button type="submit" class="btn btn-primary" onclick="this.form.submit();this.setAttribute('disabled','disabled');">Submit</button>
                                     @else
@@ -435,6 +444,7 @@
     }
     function validateRegistration(){
         var emails = isMemberValid.concat(isReserveMemberValid);
+        var initPrice = Number("{{$event->price}}");
         var i, invalidMembers = 0;
         for (i = 0; i < emails.length; i++){
             if (emails[i] == null) emails.splice(i, 1);
@@ -446,7 +456,13 @@
         } else if (emails.length > emailSet.size){
             document.getElementById("submit-validation").innerHTML = '<div class="alert alert-danger">Error: No duplicate emails allowed.</div>';
         } else {
-            document.getElementById("submit-validation").innerHTML = `<p class="text mb-4 fw-bold">By registering to this event, you agree to our rules and regulations.</p><button type="submit" class="btn btn-primary" onclick="this.form.submit();this.setAttribute('disabled','disabled');">Submit</button>`;
+            var price;
+            try {
+                price = initPrice * (document.getElementsByName("slots")[0].value);
+            } catch (e) {
+                price = initPrice;
+            }
+            document.getElementById("submit-validation").innerHTML = `<h1>Total: Rp ` + price + `</h1><p class="text text-danger fw-bold">You will be redirected to our payment form.</p><p class="text mb-4 fw-bold">By registering to this event, you agree to our rules and regulations.</p><button type="submit" class="btn btn-primary" onclick="this.form.submit();this.setAttribute('disabled','disabled');">Submit</button>`;
         }
     }
     function checkIn(registrationId){

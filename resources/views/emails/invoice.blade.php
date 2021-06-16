@@ -22,7 +22,7 @@ Please follow the payment instructions below:
 
 then proceed to [{{ env('APP_URL') }}/pay/{{ $data->registration->payment_code }}]({{ env('APP_URL') }}/pay/{{ $data->registration->payment_code }}) to upload the receipt. You can also request others to pay as long as they are logged in to a {{ env('APP_NAME') }} account by using the same link.
 
-@component('mail::button', ['url' => env('APP_URL') . '/pay/' . $data["payment_code"]])
+@component('mail::button', ['url' => (strlen($data->event->payment_link) > 0) ? $data->event->payment_link : (env('APP_URL') . '/pay/' . $data->registration->payment_code)])
 Upload Receipt
 @endcomponent
 

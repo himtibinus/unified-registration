@@ -31,6 +31,19 @@
                 </div>
             </div>
         </div>
+        @if($role->admin)
+            <div class="card mb-4">
+                <div class="card-header h4 text-white bg-primary">
+                    <i class="bi bi-check-square"></i> Disable accidental delete?
+                </div>
+                <div class="card-body text-dark">
+                  <input class="form-check-input" type="checkbox" name="flag-force-change" id="flag-force-change">
+                  <label class="form-check-label fw-bold" for="flag-force-change">
+                      Force-save the inputs, even when containing blanks
+                  </label>
+                </div>
+            </div>
+        @endif
         <div class="card mb-4">
             <div class="card-header h4 text-white bg-primary">
                 <i class="bi bi-calendar-date"></i> Event Details
@@ -147,6 +160,10 @@
                 <div class="form-group mb-4">
                     <label for="action-update-team_members_reserve">{{ __('Reserve Team Members') }}</label>
                     <input name="action-update-team_members_reserve" id="action-update-team_members_reserve" type="number" value="{{ $event->team_members_reserve }}" min="0" class="form-control" @if(!$role->admin) disabled @else required @endif>
+                </div>
+                <div class="form-group mb-4">
+                    <label for="action-update-payment_link">{{ __('Payment URL') }}</label>
+                    <input name="action-update-payment_link" id="action-update-payment_link" type="url" value="{{ $event->payment_link }}" min="0" class="form-control" @if(!$role->admin) disabled @else required @endif>
                 </div>
             </div>
         </div>

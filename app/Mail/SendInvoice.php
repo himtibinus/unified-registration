@@ -31,7 +31,7 @@ class SendInvoice extends Mailable
     public static function createEmail($registration){
         // Check whether the event is not free
         $event = DB::table('events')->where('id', $registration->event_id)->first();
-        $user = DB::table('users')->where('id', $registration->ticket_id)->first();
+        $user = DB::table('users')->where('id', $registration->user_id)->first();
 
         $data = (object) [
             'registration' => $registration,
