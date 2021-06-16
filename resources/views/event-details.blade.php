@@ -8,6 +8,7 @@
     if (count($registrations) > 0) $registered = true;
 
     $registrations_approved = 0;
+    $registrations_pending = 0;
 ?>
 
 <div class="row justify-content-center mx-0" style="background-color: @if(isset($event->theme_color_background)) {{$event->theme_color_background}} @else #4159a7 @endif; color: @if(isset($event->theme_color_foreground)) {{$event->theme_color_foreground}} @else #ffffff @endif;">
@@ -40,10 +41,26 @@
             @endif
         </div>
         @if($registered)
-            @if(strlen($event->description_private) > 0)
+            <?php
+                foreach ($registrations as $registration){
+                    if ($registration->status > 1) $registrations_approved++;
+                    if ($registration->status == 0) $registrations_pending++;
+                }
+            ?>
+            @if($registrations_pending > 0 && strlen($event->description_pending) > 0)
                 <div class="card mb-4">
                     <div class="card-header h4 bg-info text-dark">
-                        <i class="bi bi-info-circle-fill"></i> Important Information
+                        <i class="bi bi-info-circle-fill"></i> Important Information for Registration/Payment
+                    </div>
+                    <div class="card-body text-dark">
+                        @parsedown($event->description_pending)
+                    </div>
+                </div>
+            @endif
+            @if($registrations_approved > 0 && strlen($event->description_private) > 0)
+                <div class="card mb-4">
+                    <div class="card-header h4 bg-info text-dark">
+                        <i class="bi bi-info-circle-fill"></i> Important Information for Event/Attendance
                     </div>
                     <div class="card-body text-dark">
                         @parsedown($event->description_private)
@@ -52,7 +69,8 @@
             @endif
             @foreach($registrations as $registration)
                 <?php
-                    if ($registration->status != 1) $registrations_approved++;
+                    if ($registration->status > 1) $registrations_approved++;
+                    if ($registration->status == 0) $registrations_pending++;
                 ?>
                 <div class="card mb-4">
                     <div class="card-header h4 bg-primary text-white">
