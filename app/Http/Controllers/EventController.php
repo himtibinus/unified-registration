@@ -419,7 +419,7 @@ class EventController extends Controller
             $token = $request->input('token');
             if (strlen($token) == 0 || $token != '' . $event->totp_key) return response('Incorrect token', 401);
 
-            if (strlen($registration->check_out_timestamp) > 0){
+            if (strlen($registration->check_in_timestamp) > 0){
                 // Record exit attendance
                 DB::table('registration')->where('id',$id)->update(['check_out_timestamp' => $timestamp, 'status' => 5]);
             } else {
