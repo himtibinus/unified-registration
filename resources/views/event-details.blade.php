@@ -123,9 +123,9 @@
                             <div class="btn-toolbar" role="toolbar">
                                 <div class="btn-group mr-2" role="group">
                                     @if(strlen($event->payment_link) > 0)
-                                        <a type="button" class="btn btn-primary text-white" href="{{ App\Http\Controllers\EventController::getPaymentLink($event, $registration) }}">
+                                        <a class="btn btn-primary text-white" href="{{ App\Http\Controllers\EventController::getPaymentLink($event, $registration) }}">
                                     @else
-                                        <a type="button" class="btn btn-primary text-white" href="/pay/{{ $registration->payment_code }}">
+                                        <a class="btn btn-primary text-white" href="/pay/{{ $registration->payment_code }}">
                                     @endif
                                         <i class="bi bi-credit-card"></i> Pay
                                     </a>
@@ -208,7 +208,11 @@
                     @if($registration->status == 1 && strlen($registration->payment_code) > 0)
                         <div class="btn-toolbar" role="toolbar">
                             <div class="btn-group mr-2" role="group">
-                                <a type="button" class="btn btn-primary text-white" href="/pay/{{ $registration->payment_code }}">
+                                @if(strlen($event->payment_link) > 0)
+                                    <a class="btn btn-primary text-white" href="{{ App\Http\Controllers\EventController::getPaymentLink($event, $registration) }}">
+                                @else
+                                    <a class="btn btn-primary text-white" href="/pay/{{ $registration->payment_code }}">
+                                @endif
                                     <i class="bi bi-credit-card"></i> Pay
                                 </a>
                             </div>
