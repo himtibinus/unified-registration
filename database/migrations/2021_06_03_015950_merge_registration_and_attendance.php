@@ -75,7 +75,7 @@ class MergeRegistrationAndAttendance extends Migration
         });
 
         // Put all 'registration' timestamp inside 'attendance'
-        $registrations = DB::table('registration')->orderBy('check_in_timestamp', 'asc')->get()
+        $registrations = DB::table('registration')->orderBy('check_in_timestamp', 'asc')->get();
         foreach($registrations as $registration){
             $check_in_length = strlen($registration->check_in_timestamp);
             $check_out_length = strlen($registration->check_out_timestamp);
@@ -86,6 +86,6 @@ class MergeRegistrationAndAttendance extends Migration
         Schema::table('registration', function (Blueprint $table) {
             $table->dropColumn('check_in_timestamp');
             $table->dropColumn('check_out_timestamp');
-        })
+        });
     }
 }
