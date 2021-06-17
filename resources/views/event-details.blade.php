@@ -227,7 +227,7 @@
             </div>
             <div class="card-body text-dark">
                 @if ($event->opened)
-                    @if ($event->slots - $registrations_approved > 0)
+                    @if ($event->slots - $registrations_approved - $registrations_pending > 0)
                         @if (Auth::check())
                             @if (!$eligible_to_register)
                                 <h4><i class="bi bi-x-circle-fill text-danger"></i> Not Eligible</h4>
