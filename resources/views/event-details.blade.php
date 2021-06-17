@@ -103,7 +103,7 @@
                             @endswitch
                             <br>
                             @if(strlen($registration->payment_code) > 0)
-                                <b>Payment Code:</b> {{ $registration->payment_code }}<br>
+                                <!--b>Payment Code:</b> {{ $registration->payment_code }}<br-->
                             @endif
                             @if(strlen($registration->remarks) > 0)
                                 <b>Remarks: </b> {{ $registration->remarks }}
@@ -136,25 +136,25 @@
                                 @if($event->attendance_is_exit)
                                     @if($event->attendance_opened)
                                         <div class="btn-group mr-2" role="group">
-                                            <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
+                                            <button class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
                                                 <i class="bi bi-box-arrow-left"></i> Check Out
                                             </button>
                                         </div>
                                     @endif
                                 @elseif ($event->attendance_opened || $event->late)
                                     <div class="btn-group mr-2" role="group">
-                                        <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
+                                        <button class="btn btn-success" onClick="checkIn({{ $registration->id }})">
                                             <i class="bi bi-box-arrow-in-right"></i> Check In
                                         </button>
                                     </div>
                                 @endif
                                 {{-- <div class="btn-group mr-2" role="group">
-                                    <button type="button" class="btn btn-success" onClick="checkIn({{ $registration->id }})">
+                                    <button class="btn btn-success" onClick="checkIn({{ $registration->id }})">
                                         <i class="bi bi-box-arrow-in-right"></i> Check In
                                     </button>
                                 </div>
                                 <div class="btn-group mr-2" role="group">
-                                    <button type="button" class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
+                                    <button class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
                                         <i class="bi bi-box-arrow-left"></i> Check Out
                                     </button>
                                 </div> --}}
@@ -199,7 +199,7 @@
                         @endswitch
                         <br>
                         @if(strlen($registration->payment_code) > 0)
-                            <b>Payment Code:</b> {{ $registration->payment_code }}<br>
+                            <!--b>Payment Code:</b> {{ $registration->payment_code }}<br-->
                         @endif
                         @if(strlen($registration->remarks) > 0)
                             <b>Remarks: </b> {{ $registration->remarks }}
