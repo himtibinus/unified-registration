@@ -637,4 +637,36 @@ class EventController extends Controller
         $replace = array(Auth::user()->name, Auth::user()->email, $registration->payment_code, $event->id);
         return str_replace($search, $replace, $event->payment_link);
     }
+
+    // Module to register attendance queue
+    public static function insertAttendanceQueue(Request $request){
+        // Quick validation
+        if (!$request->has('clientId') || !$request->has('email') || !$request->has('token')) return response('Incomplete Request', 400);
+
+        // Load from cache
+        $attendance_clients = Cache::get('attendance_clients', []);
+        if (count($attendance_clients) == 0){
+            $query = DB::table('attendance_clients')->get();
+            for ($i = 0; $i < count($query); $i++) $attendance_clients[$query[$i]->id] = $query[$i]->enabled;
+            Cache::put('attendance_clients', $attendance_clients, 300);
+        }
+
+        $client_id = $request->get('clientId');
+        $timestamp = Carbon::now();
+
+        if (!isset($attendance_clients[$client_id]) || $attendance_clients[$client_id] != true) return response('Client not allowed', 403);
+
+        // Else...
+        $queue_id = DB::table('attendance_queue')->insertGetId([
+            'attendance_client_id' => $client_id,
+            'email' => $request->get('email'),
+            'totp_key' => $request->get('token'),
+            'created_at' => $timestamp
+        ]);
+
+        return response()->json([
+            'timestamp' => $timestamp,
+            'attendance_queue_id' => $queue_id
+        ]);
+    }
 }

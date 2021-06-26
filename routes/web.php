@@ -30,3 +30,8 @@ Route::post('/registerevent', [App\Http\Controllers\EventController::class, 'reg
 
 // Attendance
 Route::post('/attendance/{id}', [App\Http\Controllers\EventController::class, 'attendance']);
+
+Route::get('/attendance', function () {
+    return view('attendance-queue');
+});
+Route::post('/attendance', [App\Http\Controllers\EventController::class, 'insertAttendanceQueue']);
