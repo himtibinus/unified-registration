@@ -9,7 +9,7 @@
     foreach ($registeredEvents as $event) array_push($registeredEventIDs, $event->event_id);
     $availableEvents = Cache::get('availableEvents', []);
     if (count($availableEvents) == 0){
-        $availableEvents = DB::table('events')->where('private', false)->where('opened', true)->get();
+        $availableEvents = DB::table('events')->selectRaw('events.*, event_groups.name as group_name')->leftJoin('event_groups', 'events.event_group_id', 'event_groups.id')->where('private', false)->where('opened', true)->orderBy('group_name', 'asc')->get();
         Cache::put('availableEvents', $availableEvents, 300);
     }
 ?>
@@ -42,7 +42,14 @@
             @endif
             <hr>
             <h1 class="mb-4">Available Events</h1>
+            <?php
+                $current_group = null;
+            ?>
             @foreach($availableEvents as $event)
+                @if($event->event_group_id != $current_group)
+                    <h2 class="mb-4">{{ $event->group_name }}</h2>
+                    <?php $current_group = $event->event_group_id ?>
+                @endif
                 @component('components.event-card', ['event' => $event, 'type' => 'availableEvents']);
                 @endcomponent
             @endforeach
