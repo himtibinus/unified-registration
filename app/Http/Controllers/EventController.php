@@ -656,6 +656,28 @@ class EventController extends Controller
 
         if (!isset($attendance_clients[$client_id]) || $attendance_clients[$client_id] != true) return response('Client not allowed', 403);
 
+        // Validate users
+        if (
+            (Auth::guest() || Auth::user()->email != $request->get('email')) &&
+            !DB::table('users')->where('email', $request->get('email'))->first()
+        ) return response('Email not found', 401);
+
+        // Load from cache and validate tokens
+        $token_validated = false;
+
+        $event_tokens = Cache::get('event_tokens', []);
+        if (count($event_tokens) == 0){
+            $event_tokens = DB::table('events')->where('attendance_opened', true)->where('attendance_is_exit', true)->whereNotNull('totp_key')->get();
+            Cache::put('event_tokens', $event_tokens, 300);
+        }
+
+        // Make sure that the token matches and the event is opened
+        for ($i = 0; $i < count($event_tokens); $i++){
+            if ($event_tokens[$i]->totp_key == $request->get('token')) $token_validated = true;
+        }
+
+        if (!$token_validated) return response('Invalid token or the attendance period has been closed', 404);
+
         // Else...
         $queue_id = DB::table('attendance_queue')->insertGetId([
             'attendance_client_id' => $client_id,
