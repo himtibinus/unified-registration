@@ -105,6 +105,12 @@
                             @if(strlen($registration->payment_code) > 0)
                                 <!--b>Payment Code:</b> {{ $registration->payment_code }}<br-->
                             @endif
+                            @if(strlen($registration->check_in_timestamp) > 0)
+                                <b>Check in time (UTC): </b> {{ $registration->check_in_timestamp }}<br>
+                            @endif
+                            @if(strlen($registration->check_out_timestamp) > 0)
+                                <b>Check out time (UTC): </b> {{ $registration->check_out_timestamp }}<br>
+                            @endif
                             @if(strlen($registration->remarks) > 0)
                                 <b>Remarks: </b> {{ $registration->remarks }}
                             @endif
