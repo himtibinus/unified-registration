@@ -215,7 +215,7 @@
         @foreach ($registrations as $registration)
         <div class="card mb-4">
             <div class="card-header h4 @if($registration->status > 4) bg-primary @elseif($registration->status > 3) bg-info @elseif($registration->status > 1) bg-success @elseif($registration->status == 1) bg-danger @else bg-secondary @endif text-white">
-                #{{ $registration->id }}: {{ $registration->name }} @if($registration->remarks == 'Late')<span class="badge badge-pill badge-light">Late</span>@endif
+                #{{ $registration->id }}: {{ $registration->name }} @if($registration->remarks == 'Late')<span class="badge rounded-pill bg-light text-dark">Late</span>@endif
             </div>
             <div class="card-body text-dark">
                 <p class="card-title">
