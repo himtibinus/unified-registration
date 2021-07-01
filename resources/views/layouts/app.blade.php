@@ -11,8 +11,8 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}"></script>
-    <script src="{{ asset('js/cssua.min.js') }}"></script>
+    <script src="https://raw.githubusercontent.com/himtibinus/unified-registration/main/public/js/app.js"></script>
+    <script src="https://raw.githubusercontent.com/himtibinus/unified-registration/main/public/js/cssua.min.js"></script>
     <script>
         function adjustDate(element){
             // Localize date and time
@@ -27,7 +27,7 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="https://raw.githubusercontent.com/himtibinus/unified-registration/main/public/css/app.css" rel="stylesheet">
 </head>
 <body>
     <div id="app">
