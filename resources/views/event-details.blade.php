@@ -11,7 +11,7 @@
     $registrations_pending = 0;
 ?>
 
-<div class="row justify-content-center mx-0" style="background-color: @if(isset($event->theme_color_background)) {{$event->theme_color_background}} @else #4159a7 @endif; color: @if(isset($event->theme_color_foreground)) {{$event->theme_color_foreground}} @else #ffffff @endif;">
+<div class="row justify-content-center mx-0 himti-header" style="background-color: @if(isset($event->theme_color_background)) {{$event->theme_color_background}} @else #4159a7 @endif; color: @if(isset($event->theme_color_foreground)) {{$event->theme_color_foreground}} @else #ffffff @endif;">
     <div class="col-12 col-md-6 col-xl-8 p-0">
         <img class="img" src="{{ $event->cover_image }}" alt="Card image cap" style="width: 100%">
     </div>
@@ -19,7 +19,7 @@
         @if(strlen($event->kicker) > 0)
             <p class="h2 fw-normal">{{ $event->kicker }}</h2>
         @endif
-        <h1 class="display-4">{{ $event->name }} @if($event->private) <span class="badge rounded-pill bg-dark text-warning">Private</span> @endif</h1>
+        <h1 class="display-4 fw-bolder">{{ $event->name }} @if($event->private) <span class="badge rounded-pill bg-dark text-warning">Private</span> @endif</h1>
         @if ($event->team_members + $event->team_members_reserve == 0)
             <h4>Individual</h4>
         @else

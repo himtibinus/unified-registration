@@ -6,9 +6,9 @@
     <input name="_method" type="hidden" value="PUT">
     <div class="col-12 col-xl-4 p-4 pr-sm-0">
         @if($role->admin == true)
-            <h1 class="display-4 mb-4">Settings</h1>
+            <h1 class="display-4 fw-bolder mb-4">Settings</h1>
         @else
-            <h1 class="display-4 mb-4">Summary</h1>
+            <h1 class="display-4 fw-bolder mb-4">Summary</h1>
         @endif
         <div class="card mb-4">
             <div class="card-header h4 text-white bg-primary">
@@ -211,7 +211,7 @@
         @endif
     </div>
     <div class="col-12 col-xl-8 p-4 pb-sm-0">
-        <h1 class="display-4 mb-4">Participants</h1>
+        <h1 class="display-4 mb-4 fw-bolder">Participants</h1>
         @foreach ($registrations as $registration)
         <div class="card mb-4">
             <div class="card-header h4 @if($registration->status > 4) bg-primary @elseif($registration->status > 3) bg-info @elseif($registration->status > 1) bg-success @elseif($registration->status == 1) bg-danger @else bg-secondary @endif text-white">

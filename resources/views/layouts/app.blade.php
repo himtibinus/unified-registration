@@ -11,8 +11,8 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Scripts -->
-    <script src="https://raw.githubusercontent.com/himtibinus/unified-registration/main/public/js/app.js"></script>
-    <script src="https://raw.githubusercontent.com/himtibinus/unified-registration/main/public/js/cssua.min.js"></script>
+    <script src="{{ url('/js/app.js') }}"></script>
+    <script src="{{ url('/js/cssua.min.js') }}"></script>
     <script>
         function adjustDate(element){
             // Localize date and time
@@ -27,13 +27,13 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
 
     <!-- Styles -->
-    <link href="https://raw.githubusercontent.com/himtibinus/unified-registration/main/public/css/app.css" rel="stylesheet">
+    <link href="{{ url('/css/app.css') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm">
             <div class="container">
-                <a class="navbar-brand font-weight-bold" href="{{ url('/') }}">
+                <a class="navbar-brand fw-bold" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
