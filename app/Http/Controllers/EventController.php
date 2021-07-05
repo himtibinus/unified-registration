@@ -37,7 +37,7 @@ class EventController extends Controller
     {
         date_default_timezone_set('UTC');
         $path = $request->url();
-        if (!$this->requiresLogin($path, 0, true, false)) return redirect('home');
+        if (!parent::requiresLogin($path, 0, true, false)) return redirect('home');
 
         $key = '';
         for ($i = 0; $i < 6; $i++) $key .= rand(0, 9);
@@ -88,7 +88,7 @@ class EventController extends Controller
             $rejected = DB::table('registration')->where('ticket_id', $user->id)->where('event_id', $event->id)->where('status', 1)->get();
         }
 
-        $admin_or_committee = $this->requiresLogin($request->url(), $event->id, true, true);
+        $admin_or_committee = parent::requiresLogin($request->url(), $event->id, true, true);
         Session::remove('error');
 
         // Check whether the event is private
@@ -117,7 +117,7 @@ class EventController extends Controller
 
             if ($user){
                 $user_properties = DB::table('user_properties')->where('user_id', $user->id)->get();
-                $validation = $this->validateFields($event_permissions, $user_properties);
+                $validation = parent::validateFields($event_permissions, $user_properties);
             }
         }
 
@@ -149,7 +149,7 @@ class EventController extends Controller
         }
 
         // Check whether the user is an admin or committee
-        $check = $this->checkAdminOrCommittee(Auth::id(), $id);
+        $check = parent::checkAdminOrCommittee(Auth::id(), $id);
         if (!$check->admin && !$check->committee){
             // If not simply return to main page
             return redirect('events/' . $id);
@@ -180,7 +180,7 @@ class EventController extends Controller
     public function update(Request $request, $id)
     {
         // Make sure that it's an Admin (Higher Level)
-        if (!$this->requiresLogin($request->path(), $id, true, false)) return redirect('home');
+        if (!parent::requiresLogin($request->path(), $id, true, false)) return redirect('home');
 
         $force_change = false;
         if ($request->has('flag-force-change') && $request->input('flag-force-change') == "checked") $force_change = true;
@@ -371,7 +371,7 @@ class EventController extends Controller
 
         // Check permissions and validation
         $user_properties = DB::table('user_properties')->where('user_id', $user->id)->get();
-        $validation = $this->validateFields($event_permissions, $user_properties);
+        $validation = parent::validateFields($event_permissions, $user_properties);
         $registrations = DB::table('registration')->where('ticket_id', $user->id)->where('event_id', $request->get('eventId'))->where('status', '!=', 1)->get();
 
         if ($event->slots - count($registrations) <= 0) $validation->eligible_to_register = false;
@@ -447,7 +447,7 @@ class EventController extends Controller
         foreach ($queue as $user){
             $user_properties = DB::table('user_properties')->where('user_id', $user->id)->get();
             $registrations = DB::table('registration')->where('event_id', $event->id)->where('ticket_id', $user->id)->where('status', '!=', 1)->get();
-            $validation = $this->validateFields($event_permissions, $user_properties);
+            $validation = parent::validateFields($event_permissions, $user_properties);
             if ($event->slots - count($registrations) <= 0) $validation->eligible_to_register = false;
 
             if (!$validation->eligible_to_register){

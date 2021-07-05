@@ -6,6 +6,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Controller extends BaseController
 {
@@ -54,7 +56,7 @@ class Controller extends BaseController
     /**
      * Utility function to ensure that the user has been authenticated
      */
-    private function requiresLogin(string $path, int $eventId, bool $for_admin, bool $for_committee){
+    protected function requiresLogin(string $path, int $eventId, bool $for_admin, bool $for_committee){
         if (!Auth::check()){
             Session::put('error', 'Please log in before continuing to this page');
             Session::put('loginTo', $path);
