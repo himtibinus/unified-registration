@@ -22,6 +22,7 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/refreshtoken', [App\Http\Controllers\HomeController::class, 'refreshToken']);
+Route::resource('/clients', App\Http\Controllers\ExternalClientsController::class);
 Route::resource('/events', App\Http\Controllers\EventController::class);
 
 // Get user details (for registration)

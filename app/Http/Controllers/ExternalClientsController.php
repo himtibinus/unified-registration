@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ExternalClientsController extends Controller
 {
@@ -13,7 +14,9 @@ class ExternalClientsController extends Controller
      */
     public function index()
     {
-        //
+        parent::requiresLogin('/clients', -1, true, false);
+        $externalClients = DB::table('attendance_clients')->orderBy('name', 'asc')->get();
+        return view('external-clients', ['clients' => $externalClients]);
     }
 
     /**
@@ -45,7 +48,7 @@ class ExternalClientsController extends Controller
      */
     public function show($id)
     {
-        $clients = DB::;
+        //
     }
 
     /**
