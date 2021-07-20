@@ -13,7 +13,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    private function checkAdminOrCommittee($userId, $eventId){
+    protected function checkAdminOrCommittee($userId, $eventId){
         $admin = false;
         $committee = false;
 
