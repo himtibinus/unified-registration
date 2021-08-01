@@ -415,6 +415,13 @@ class EventController extends Controller
         $members = [];
         $reserve = [];
 
+        // Create an email draft
+        $event_title = (strlen($event->kicker) > 0 ? ($event->kicker . ': ') : '') . $event->name;
+        $email_template = [
+            'message_type' => 'PLAINTEXT',
+            'sender_name' => 'HIMTI - ' . (strlen($event->kicker) > 0 ? $event->kicker : $event->name)
+        ];
+
         // Get whether teams are needed
         if ($team_required == true){
             if (!$request->has("create_team") || !$request->has("team_name") || $request->input("team_name") == ""){
@@ -490,7 +497,11 @@ class EventController extends Controller
                     array_push($query, $temp);
                 }
                 // Send Email
-                Mail::to($request->input("team_member_" . ($i + 1)))->send(new SendNewTeamNotification(["name" => $tempdetails["name"], "team_name" => $request->input("team_name"), "team_id" => $team_id, "team_leader_name" => Auth::user()->name, "team_leader_email" => Auth::user()->email, "role" => "Main Player/Member " . ($i + 1), "event_name" => $event->name, "event_kicker" => $event->kicker]));
+                // Mail::to($request->input("team_member_" . ($i + 1)))->send(new SendNewTeamNotification(["name" => $tempdetails["name"], "team_name" => $request->input("team_name"), "team_id" => $team_id, "team_leader_name" => Auth::user()->name, "team_leader_email" => Auth::user()->email, "role" => "Main Player/Member " . ($i + 1), "event_name" => $event->name, "event_kicker" => $event->kicker]));
+                $email_draft = $email_template;
+                $email_draft['subject'] = 'You have been invited to join ' . $event_title . ' by ' . $leader->name;
+                $email_draft['message'] = 'You have been invited by ' . $leader->name . ' (' . $leader->email . ') to join as a member of "' . $request->input("team_name") . '" to join ' . $event_title . '\n\nYour team and ticket details can be found on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being added by mistake, please contact the respective event committees.';
+                DB::table('email_queue')->insert($email_draft);
             }
 
             // Find the User ID of reseve team members
@@ -507,7 +518,11 @@ class EventController extends Controller
                     array_push($query, $temp);
                 }
                 // Send Email
-                Mail::to($request->input("team_member_reserve_" . ($i + 1)))->send(new SendNewTeamNotification(["name" => $tempdetails["name"], "team_name" => $request->input("team_name"), "team_id" => $team_id, "team_leader_name" => Auth::user()->name, "team_leader_email" => Auth::user()->email, "role" => "Reserve Player/Member " . ($i + 1), "event_name" => $event->name, "event_kicker" => $event->kicker]));
+                // Mail::to($request->input("team_member_reserve_" . ($i + 1)))->send(new SendNewTeamNotification(["name" => $tempdetails["name"], "team_name" => $request->input("team_name"), "team_id" => $team_id, "team_leader_name" => Auth::user()->name, "team_leader_email" => Auth::user()->email, "role" => "Reserve Player/Member " . ($i + 1), "event_name" => $event->name, "event_kicker" => $event->kicker]));
+                $email_draft = $email_template;
+                $email_draft['subject'] = 'You have been invited to join ' . $event_title . ' by ' . $leader->name;
+                $email_draft['message'] = 'You have been invited by ' . $leader->name . ' (' . $leader->email . ') to join as a reserve member of "' . $request->input("team_name") . '" to join ' . $event_title . '\n\nYour team and ticket details can be found on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being added by mistake, please contact the respective event committees.';
+                DB::table('email_queue')->insert($email_draft);
             }
             // Insert into the database
             DB::table("registration")->insert($query);
@@ -518,6 +533,15 @@ class EventController extends Controller
 
         // Send Email for Payment
         // if($event->price > 0) Mail::to(Auth::user()->email)->send(SendInvoice::createEmail((object) ["name" => Auth::user()->name, "event_id" => $event->id, "user_id" => Auth::user()->id, "event_name" => $event->name, "payment_code" => $payment_code, "total_price" => $event->price * $slots]));
+
+        // Send Email for Payment
+        $email_template['subject'] = 'Welcome to ' . $event_title . '!';
+        $email_template['subject'] = 'Thank you for registering to ' . $event_title . '.';
+
+        if ($event->price == 0 && $event->auto_accept == true) $email_template['subject'] .= ' Your registration has been approved by our team.\n\nYour ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being registered by mistake, please contact the respective event committees.';
+        else $email_template['subject'] .= ' Please finish your payment (if any) and wait while our team verifies and approves your registration.\n\nYou may check your ticket status regularly on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being registered by mistake, please contact the respective event committees.';
+
+        DB::table('email_queue')->insert($email_template);
 
         // Return Response
         if ($event->price > 0){
