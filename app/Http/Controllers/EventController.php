@@ -506,7 +506,7 @@ class EventController extends Controller
                 // Mail::to($request->input("team_member_" . ($i + 1)))->send(new SendNewTeamNotification(["name" => $tempdetails["name"], "team_name" => $request->input("team_name"), "team_id" => $team_id, "team_leader_name" => Auth::user()->name, "team_leader_email" => Auth::user()->email, "role" => "Main Player/Member " . ($i + 1), "event_name" => $event->name, "event_kicker" => $event->kicker]));
                 $email_draft = $email_template;
                 $email_draft['subject'] = 'You have been invited to join ' . $event_title . ' by ' . $leader->name;
-                $email_draft['message'] = 'You have been invited by ' . $leader->name . ' (' . $leader->email . ') to join as a member of "' . $request->input("team_name") . '" to join ' . $event_title . '\n\nYour team and ticket details can be found on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being added by mistake, please contact the respective event committees.';
+                $email_draft['message'] = 'You have been invited by ' . $leader->name . ' (' . $leader->email . ') to join as a member of "' . $request->input("team_name") . '" to join ' . $event_title . PHP_EOL . PHP_EOL . 'Your team and ticket details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being added by mistake, please contact the respective event committees.';
                 $email_draft['email'] = $tempdetails->email;
                 DB::table('email_queue')->insert($email_draft);
             }
@@ -528,7 +528,7 @@ class EventController extends Controller
                 // Mail::to($request->input("team_member_reserve_" . ($i + 1)))->send(new SendNewTeamNotification(["name" => $tempdetails["name"], "team_name" => $request->input("team_name"), "team_id" => $team_id, "team_leader_name" => Auth::user()->name, "team_leader_email" => Auth::user()->email, "role" => "Reserve Player/Member " . ($i + 1), "event_name" => $event->name, "event_kicker" => $event->kicker]));
                 $email_draft = $email_template;
                 $email_draft['subject'] = 'You have been invited to join ' . $event_title . ' by ' . $leader->name;
-                $email_draft['message'] = 'You have been invited by ' . $leader->name . ' (' . $leader->email . ') to join as a reserve member of "' . $request->input("team_name") . '" to join ' . $event_title . '\n\nYour team and ticket details can be found on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being added by mistake, please contact the respective event committees.';
+                $email_draft['message'] = 'You have been invited by ' . $leader->name . ' (' . $leader->email . ') to join as a reserve member of "' . $request->input("team_name") . '" to join ' . $event_title . PHP_EOL . PHP_EOL . 'Your team and ticket details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being added by mistake, please contact the respective event committees.';
                 $email_draft['email'] = $tempdetails->email;
                 DB::table('email_queue')->insert($email_draft);
             }
@@ -547,8 +547,8 @@ class EventController extends Controller
         $email_template['message'] = 'Thank you for registering to ' . $event_title . '.';
         $email_template['email'] = $leader->email;
 
-        if ($event->price == 0 && $event->auto_accept == true) $email_template['message'] .= ' Your registration has been approved by our team.\n\nYour ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being registered by mistake, please contact the respective event committees.';
-        else $email_template['message'] .= ' Please finish your payment (if any) and wait while our team verifies and approves your registration.\n\nYou may check your ticket status regularly on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being registered by mistake, please contact the respective event committees.';
+        if ($event->price == 0 && $event->auto_accept == true) $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
+        else $email_template['message'] .= ' Please finish your payment (if any) and wait while our team verifies and approves your registration.' . PHP_EOL . PHP_EOL . 'You may check your ticket status regularly on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
 
         DB::table('email_queue')->insert($email_template);
 
