@@ -400,8 +400,13 @@ class EventController extends Controller
 
         // Check on database whether the event exists
         $event = DB::table("events")->where("id", $event_id)->first();
+        $currentTickets = DB::table('registration')->selectRaw('count(*) as total')->where('event_id', $event->id)->where('status', '!=', 1)->first();
+
         if (!$event){
             $request->session()->put('error', "Event not found.");
+            return redirect('/home');
+        } else if ($currentTickets->total >= $event->seats) {
+            $request->session()->put('error', "Unable to register to " . $event->name . " due to full capacity.");
             return redirect('/home');
         } else if ($event->opened == 0) {
             $request->session()->put('error', "The registration period for " . $event->name . " has been closed.");

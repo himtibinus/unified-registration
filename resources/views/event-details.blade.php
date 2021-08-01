@@ -4,11 +4,16 @@
 
 <?php
     use Carbon\Carbon;
+    use Illuminate\Support\Facades\DB;
     $registered = false;
     if (count($registrations) > 0) $registered = true;
 
     $registrations_approved = 0;
     $registrations_pending = 0;
+
+    $currentTickets = DB::table('registration')->selectRaw('count(*) as total')->where('event_id', $event->id)->where('status', '!=', 1)->first();
+
+    if ($currentTickets->total >= $event->seats) $eligible_to_register = false;
 ?>
 
 <div class="row justify-content-center mx-0 himti-header" style="background-color: @if(isset($event->theme_color_background)) {{$event->theme_color_background}} @else #4159a7 @endif; color: @if(isset($event->theme_color_foreground)) {{$event->theme_color_foreground}} @else #ffffff @endif;">
@@ -27,6 +32,7 @@
         @endif
         <h4>Starts at <span id="eventDate">{{ Carbon::parse($event->date) }}</span></h4>
         <script>adjustDate('eventDate')</script>
+        <h4>{{ ($currentTickets->total >= $event->seats) ? 'No more' : ($event->seats - $currentTickets->total) }} seats left</h4>
         @if ($event->price < 2)
             <h4>Free of charge</h4>
         @else
@@ -232,7 +238,9 @@
                 <i class="bi bi-calendar-plus"></i> Register to this Event
             </div>
             <div class="card-body text-dark">
-                @if ($event->opened)
+                @if($currentTickets->total >= $event->seats)
+                    <p>Registrations are now closed due to full capacity.</p>
+                @elseif ($event->opened)
                     @if ($event->slots - $registrations_approved - $registrations_pending > 0)
                         @if (Auth::check())
                             @if (!$eligible_to_register)
