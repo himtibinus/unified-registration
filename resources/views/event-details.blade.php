@@ -21,7 +21,7 @@
         <img class="img" src="{{ $event->cover_image }}" alt="Card image cap" style="width: 100%">
     </div>
     <div class="col-12 col-md-6 col-xl-4 p-4 pb-sm-0">
-        @if(strlen($event->kicker) > 0)
+        @if (strlen($event->kicker) > 0)
             <p class="h2 fw-normal">{{ $event->kicker }}</h2>
         @endif
         <h1 class="display-4 fw-bolder">{{ $event->name }} @if($event->private) <span class="badge rounded-pill bg-dark text-warning">Private</span> @endif</h1>
