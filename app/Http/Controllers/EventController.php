@@ -424,7 +424,8 @@ class EventController extends Controller
         $event_title = (strlen($event->kicker) > 0 ? ($event->kicker . ': ') : '') . $event->name;
         $email_template = [
             'message_type' => 'PLAINTEXT',
-            'sender_name' => 'HIMTI - ' . (strlen($event->kicker) > 0 ? $event->kicker : $event->name)
+            'sender_name' => 'HIMTI - ' . (strlen($event->kicker) > 0 ? $event->kicker : $event->name),
+            'created_at' => date("Y-m-d H:i:s")
         ];
 
         // Get whether teams are needed
