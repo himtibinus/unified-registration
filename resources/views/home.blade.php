@@ -47,7 +47,7 @@
             ?>
             @foreach($availableEvents as $event)
                 @if($event->event_group_id != $current_group)
-                    <h2 class="mb-4">{{ $event->group_name }}</h2>
+                    <h2 class="mb-4">{{ isset($event->group_name) ? $event->group_name : 'Unknown' }}</h2>
                     <?php $current_group = $event->event_group_id ?>
                 @endif
                 @component('components.event-card', ['event' => $event, 'type' => 'availableEvents']);
