@@ -543,11 +543,11 @@ class EventController extends Controller
 
         // Send Email for Payment
         $email_template['subject'] = 'Welcome to ' . $event_title . '!';
-        $email_template['subject'] = 'Thank you for registering to ' . $event_title . '.';
+        $email_template['message'] = 'Thank you for registering to ' . $event_title . '.';
         $email_template['email'] = $leader->email;
 
-        if ($event->price == 0 && $event->auto_accept == true) $email_template['subject'] .= ' Your registration has been approved by our team.\n\nYour ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being registered by mistake, please contact the respective event committees.';
-        else $email_template['subject'] .= ' Please finish your payment (if any) and wait while our team verifies and approves your registration.\n\nYou may check your ticket status regularly on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being registered by mistake, please contact the respective event committees.';
+        if ($event->price == 0 && $event->auto_accept == true) $email_template['message'] .= ' Your registration has been approved by our team.\n\nYour ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being registered by mistake, please contact the respective event committees.';
+        else $email_template['message'] .= ' Please finish your payment (if any) and wait while our team verifies and approves your registration.\n\nYou may check your ticket status regularly on https://registration.himti.or.id/events/' . $event->id . '/.\n\nIf you are being registered by mistake, please contact the respective event committees.';
 
         DB::table('email_queue')->insert($email_template);
 
