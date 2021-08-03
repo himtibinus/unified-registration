@@ -116,6 +116,9 @@
                     <div class="alert alert-success" role="alert">
                         <b>For BINUS University students, please use your full program names</b> such as <b><i>Computer Science and Mathematics</i></b> instead of <b><i>TI MAT</i></b> (may be confused with <b><i>Mobile Application and Technology - MAT</i></b>), or <b><i>Computer Science Global Class</i></b> instead of <b><i>IT GC</i></b>.
                     </div>
+                    <div class="alert alert-info" role="alert">
+                        <b>BINUS International Computer Science</b> and <b>PPTI BCA</b> students may select <b>Computer Science (Regular)</b> as their major / study program.
+                    </div>
                 </div>
             </div>
             <div class="card mb-4">
