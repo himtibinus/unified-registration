@@ -254,6 +254,9 @@
     }
 
     document.getElementById("major").addEventListener("input", suggest);
+    document.getElementById("major").addEventListener("change", suggest);
+    document.getElementById("major").addEventListener("keypress", suggest);
+    document.getElementById("major").addEventListener("paste", suggest);
 
 </script>
 @endsection
