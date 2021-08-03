@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <div class="alert alert-info" role="alert">
-                        <b>For BINUSIAN Participants:</b> Make sure to select <b>BINUS University</b> to be eligible for <a href="https://student.binus.ac.id/sat/" target="_blank">Student Activity Transcript (SAT)</a> points.
+                        <b>For BINUSIAN Participants:</b> Make sure to select <b>BINUS University</b> to be eligible for <a href="https://student.binus.ac.id/sat/" target="_blank">Student Activity Transcript (SAT)</a> points. Use <b>@binus.ac.id</b> email address whenever possible.
                     </div>
                     <div class="alert alert-warning" role="alert">
                         <b>For PPTI BCA Participants at TECHNO 2021:</b> Make sure to select <b>BINUS University</b> and select <b>PPTI BCA</b> as your Regional/Campus Location.
