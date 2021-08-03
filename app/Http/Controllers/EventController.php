@@ -423,7 +423,7 @@ class EventController extends Controller
         // Create an email draft
         $event_title = (strlen($event->kicker) > 0 ? ($event->kicker . ': ') : '') . $event->name;
         $email_template = [
-            'message_type' => 'PLAINTEXT',
+            'message_type' => 'MARKDOWN',
             'sender_name' => 'HIMTI - ' . (strlen($event->kicker) > 0 ? $event->kicker : $event->name),
             'created_at' => date("Y-m-d H:i:s")
         ];
@@ -507,6 +507,8 @@ class EventController extends Controller
                 $email_draft = $email_template;
                 $email_draft['subject'] = 'You have been invited to join ' . $event_title . ' by ' . $leader->name;
                 $email_draft['message'] = 'You have been invited by ' . $leader->name . ' (' . $leader->email . ') to join as a member of "' . $request->input("team_name") . '" to join ' . $event_title . PHP_EOL . PHP_EOL . 'Your team and ticket details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being added by mistake, please contact the respective event committees.';
+                if ($event->price == 0 && $event->auto_accept == true && strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
+                else if (strlen($event->description_pending) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_pending;
                 $email_draft['email'] = $tempdetails->email;
                 DB::table('email_queue')->insert($email_draft);
             }
@@ -529,6 +531,8 @@ class EventController extends Controller
                 $email_draft = $email_template;
                 $email_draft['subject'] = 'You have been invited to join ' . $event_title . ' by ' . $leader->name;
                 $email_draft['message'] = 'You have been invited by ' . $leader->name . ' (' . $leader->email . ') to join as a reserve member of "' . $request->input("team_name") . '" to join ' . $event_title . PHP_EOL . PHP_EOL . 'Your team and ticket details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being added by mistake, please contact the respective event committees.';
+                if ($event->price == 0 && $event->auto_accept == true && strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
+                else if (strlen($event->description_pending) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_pending;
                 $email_draft['email'] = $tempdetails->email;
                 DB::table('email_queue')->insert($email_draft);
             }
@@ -547,8 +551,13 @@ class EventController extends Controller
         $email_template['message'] = 'Thank you for registering to ' . $event_title . '.';
         $email_template['email'] = $leader->email;
 
-        if ($event->price == 0 && $event->auto_accept == true) $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
-        else $email_template['message'] .= ' Please finish your payment (if any) and wait while our team verifies and approves your registration.' . PHP_EOL . PHP_EOL . 'You may check your ticket status regularly on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
+        if ($event->price == 0 && $event->auto_accept == true){
+            $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
+            if (strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
+        } else {
+            $email_template['message'] .= ' Please finish your payment (if any) and wait while our team verifies and approves your registration.' . PHP_EOL . PHP_EOL . 'You may check your ticket status regularly on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
+            if (strlen($event->description_pending) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_pending;
+        }
 
         DB::table('email_queue')->insert($email_template);
 
