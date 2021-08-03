@@ -60,6 +60,7 @@ class RegisterController extends Controller
             'university_id' => ['required', 'numeric'],
             'nim' => ['nullable', 'numeric'],
             'binus_regional' => ['nullable', 'string'],
+            'fyp_batch' => ['nullable', 'numeric'],
             'major_name' => ['nullable', 'string'],
             'new_university' => ['nullable', 'string']
         ]);
@@ -96,6 +97,7 @@ class RegisterController extends Controller
         if ($data['university_id'] == 4){
             $user_properties->insert(['user_id' => $new_user->id, 'field_id' => 'binusian.regional', 'value' => $data['binus_regional']]);
             $user_properties->insert(['user_id' => $new_user->id, 'field_id' => 'binusian.year', 'value' => '20' . substr($data['nim'], 0, 2)]);
+            if ($data['fyp_batch'] > 0) $user_properties->insert(['user_id' => $new_user->id, 'field_id' => 'binusian.fyp.batch', 'value' => $data['fyp_batch']]);
         }
 
         // Save major / study program

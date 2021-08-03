@@ -77,6 +77,19 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-group row" id="fyp_batch-container">
+                        <label for="fyp_batch" class="col-md-4 col-form-label text-md-right">FYP Batch (for TECHNO 2021)<b class="text-danger">*</b></label>
+                        <div class="col-md-6">
+                            <select class="form-control" id="fyp_batch" name="fyp_batch">
+                                <option value="0">None</option>
+                                <option value="1">Batch 1</option>
+                                <option value="2">Batch 2</option>
+                                <option value="3">Batch 3</option>
+                                <option value="4">Batch 4</option>
+                                <option value="5">Batch 5</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group row" id="new_university-container">
                         <label for="new_university" class="col-md-4 col-form-label text-md-right">{{ __('University Name') }}<b class="text-danger">*</b></label>
                         <div class="col-md-6">
