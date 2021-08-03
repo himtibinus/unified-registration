@@ -104,12 +104,13 @@
                     <div class="form-group row">
                         <label for="major" class="col-md-4 col-form-label text-md-right">{{ __('Major / Study Program') }}<b class="text-danger">*</b></label>
                         <div class="col-md-6">
-                            <input id="major" type="text" class="form-control @error('major') is-invalid @enderror" name="major" value="{{ old('major') }}">
+                            <input id="major" type="text" class="form-control @error('major') is-invalid @enderror" name="major" value="{{ old('major') }}" list="major-recommendations">
                             @error('major')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
                             @enderror
+                            <datalist id="major-recommendations"></datalist>
                         </div>
                     </div>
                     <div class="alert alert-success" role="alert">
@@ -198,7 +199,10 @@
         </form>
     </div>
 </div>
+<script src="/js/jurusan.js"></script>
 <script>
+    var jurusan = new Jurusan();
+
     checkBinusian();
     function checkBinusian(){
         if (document.getElementById("university_id").value == 4){
@@ -208,6 +212,8 @@
             document.getElementById("binus_regional").setAttribute("required","true");
             document.getElementById("major").setAttribute("required","true");
             document.querySelector('[for="major"] > b').style.display = "inline";
+            document.getElementById("fyp_batch-container").style.display = "flex";
+            document.getElementById("fyp_batch").setAttribute("required","true");
         } else {
             document.getElementById("nim-container").style.display = "none";
             document.getElementById("nim").removeAttribute("required");
@@ -215,6 +221,8 @@
             document.getElementById("binus_regional").removeAttribute("required");
             document.getElementById("major").removeAttribute("required");
             document.querySelector('[for="major"] > b').style.display = "none";
+            document.getElementById("fyp_batch-container").style.display = "none";
+            document.getElementById("fyp_batch").removeAttribute("required");
         }
         if (document.getElementById("university_id").value == 0){
             document.getElementById("new_university-container").style.display = "flex";
@@ -224,5 +232,28 @@
             document.getElementById("new_university").removeAttribute("required");
         }
     }
+
+    function suggest(){
+        var q = document.getElementById("major").value;
+        var res = jurusan.search(q, {limit: 10});
+        var i;
+
+        for (i = 0; i < res.length; i++){
+            if (res[i].name === q) return;
+        }
+
+        // Create a list of recommendations
+        var dl = document.getElementById("major-recommendations");
+        dl.innerHTML = "";
+        for (i = 0; i < res.length; i++){
+            var o = document.createElement("option");
+            o.value = res[i].name;
+            o.textContent = "Suggestion for \"" + q + "\"";
+            dl.appendChild(o);
+        }
+    }
+
+    document.getElementById("major").addEventListener("input", suggest);
+
 </script>
 @endsection
