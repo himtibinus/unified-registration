@@ -248,7 +248,7 @@
         for (i = 0; i < res.length; i++){
             var o = document.createElement("option");
             o.value = res[i].name;
-            o.textContent = "Suggestion for \"" + q + "\"";
+            o.textContent = "\"" + q + "\": " + res[i].name;
             dl.appendChild(o);
         }
     }
