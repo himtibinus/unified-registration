@@ -199,7 +199,7 @@
         </form>
     </div>
 </div>
-<script src="/js/jurusan.js"></script>
+<script src="/js/jurusan.js/jurusan.js"></script>
 <script>
     var jurusan = new Jurusan();
 
