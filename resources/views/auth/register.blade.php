@@ -82,11 +82,11 @@
                         <div class="col-md-6">
                             <select class="form-control" id="fyp_batch" name="fyp_batch">
                                 <option value="0">None</option>
-                                <option value="1">Batch 1</option>
-                                <option value="2">Batch 2</option>
-                                <option value="3">Batch 3</option>
-                                <option value="4">Batch 4</option>
-                                <option value="5">Batch 5</option>
+                                <option value="1 (Alam Sutera/Bandung/Kemanggisan Batch 1)">1 (Alam Sutera/Bandung/Kemanggisan Batch 1)</option>
+                                <option value="2 (Alam Sutera/Bandung/Kemanggisan Batch 2)">2 (Alam Sutera/Bandung/Kemanggisan Batch 2)</option>
+                                <option value="3 (Malang Batch 1, Alam Sutera/Bandung/Kemanggisan Batch 3)">3 (Malang Batch 1, Alam Sutera/Bandung/Kemanggisan Batch 3)</option>
+                                <option value="4 (Malang Batch 2, Alam Sutera/Kemanggisan Batch 4)">4 (Malang Batch 2, Alam Sutera/Kemanggisan Batch 4)</option>
+                                <option value="5 (Senayan Batch 1, Malang Batch 3)">5 (Senayan Batch 1, Malang Batch 3)</option>
                             </select>
                         </div>
                     </div>
