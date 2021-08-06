@@ -60,7 +60,7 @@ class RegisterController extends Controller
             'university_id' => ['required', 'numeric'],
             'nim' => ['nullable', 'numeric'],
             'binus_regional' => ['nullable', 'string'],
-            'fyp_batch' => ['nullable', 'numeric'],
+            'fyp_batch' => ['nullable', 'string'],
             'major_name' => ['nullable', 'string'],
             'new_university' => ['nullable', 'string']
         ]);
