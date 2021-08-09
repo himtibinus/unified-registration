@@ -25,6 +25,8 @@ Route::get('/refreshtoken', [App\Http\Controllers\HomeController::class, 'refres
 Route::resource('/clients', App\Http\Controllers\ExternalClientsController::class);
 Route::resource('/events', App\Http\Controllers\EventController::class);
 
+Route::resource('/profile', App\Http\Controllers\ProfileController::class);
+
 // Get user details (for registration)
 Route::post('/getuserdetails', [App\Http\Controllers\EventController::class, 'getUserDetails']);
 Route::post('/registerevent', [App\Http\Controllers\EventController::class, 'registerToEvent']);
