@@ -9,7 +9,7 @@
     foreach ($registeredEvents as $event) array_push($registeredEventIDs, $event->event_id);
     $availableEvents = Cache::get('availableEvents', []);
     if (count($availableEvents) == 0){
-        $availableEvents = DB::table('events')->selectRaw('events.*, event_groups.name as group_name')->leftJoin('event_groups', 'events.event_group_id', 'event_groups.id')->where('private', false)->where('opened', true)->orderBy('group_name', 'asc')->get();
+        $availableEvents = DB::table('events')->selectRaw('events.*, event_groups.name as group_name')->leftJoin('event_groups', 'events.event_group_id', 'event_groups.id')->where('private', false)->where('opened', true)->orderBy('event_group_id', 'asc')->get();
         Cache::put('availableEvents', $availableEvents, 300);
     }
 ?>
