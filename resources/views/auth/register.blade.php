@@ -82,7 +82,7 @@
                         <div class="col-md-6">
                             <select class="form-control" id="fyp_batch" name="fyp_batch">
                                 <option value="0">None</option>
-                                <option value="1 (AAS, ABN, ABB)">1 (AAS, ABN, ABB)</option>
+                                <option value="1 (AAS, ABN, ABB, PPTI)">1 (AAS, ABN, ABB, PPTI)</option>
                                 <option value="2 (BAS, BBN, BBB)">2 (BAS, BBN, BBB)</option>
                                 <option value="3 (ABM, CAS, CBN, CBB)">3 (ABM, CAS, CBN, CBB)</option>
                                 <option value="4 (BBM, DAS, DBN)">4 (BBM, DAS, DBN)</option>
