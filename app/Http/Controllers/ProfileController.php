@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class ProfileController extends Controller
 {
@@ -15,6 +16,11 @@ class ProfileController extends Controller
      */
     public function index()
     {
+        if (!Auth::check()){
+            Session::put('error', 'Please log in before continuing to this page');
+            Session::put('loginTo', '/profile');
+            return redirect('/login');
+        }
         $user = Auth::user();
         $user->university = DB::table('universities')->where('id', $user->university_id)->first()->name;
         $user_properties = DB::table('user_properties')->join('fields', 'fields.id', 'user_properties.field_id')->where('user_id', $user->id)->orderBy('name', 'asc')->get();
