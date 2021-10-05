@@ -243,8 +243,8 @@
                             Unknown ({{ $registration->status }})
                     @endswitch
                     <br>
-                    @if(strlen($registration->payment_code) > 0)
-                        <b>Email:</b> {{ $registration->payment_code }}<br>
+                    @if(strlen($registration->email) > 0)
+                        <b>Email:</b> {{ $registration->email }}<br>
                     @endif
                     @if(strlen($registration->payment_code) > 0)
                         <b>Payment Code:</b> {{ $registration->payment_code }}<br>
