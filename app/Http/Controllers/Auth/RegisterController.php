@@ -79,11 +79,11 @@ class RegisterController extends Controller
         }
 
         if ($data['university_id'] == 2 || $data['university_id'] == 3) $data['university_id'] = 1;
-
         $new_user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'university_id' => $data['university_id'],
+            'password' => Hash::make($data['password'])
         ]);
 
         $user_properties = DB::table('user_properties');
