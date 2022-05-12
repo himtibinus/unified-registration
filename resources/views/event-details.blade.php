@@ -144,33 +144,60 @@
                                 </div>
                             </div>
                         @else
-                            <div class="btn-toolbar" role="toolbar">
-                                @if($event->attendance_is_exit)
-                                    @if($event->attendance_opened)
+                            @if($event->event_offline_status == 1 && $registration->offline_status ==1)
+                                <div class="btn-toolbar" role="toolbar">
+                                    @if($event->attendance_is_exit)
+                                        @if($event->attendance_opened)
+                                            {{--<div class="btn-group mr-2" role="group">
+                                                <button class="btn btn-success" onClick="ShowQR({{ $registration->id }})">
+                                                    <i class="bi bi-qr-code"></i> Show QR
+                                                </button>
+                                            </div>--}}
+                                            <div class="alert alert-info w-100" role="alert">
+                                            Please check QR via email that registered
+                                            </div>
+                                        @endif
+                                    @elseif ($event->attendance_opened || $event->late)
+                                        {{--<div class="btn-group mr-2" role="group">
+                                            <button class="btn btn-success" onClick="ShowQR({{ $registration->id }})">
+                                                <i class="bi bi-qr-code"></i> Show QR
+                                            </button>
+                                        </div>--}}
+                                        <div class="alert alert-info w-100" role="alert">
+                                        Please check QR via email that registered
+                                        </div>
+                                    @endif
+                                </div>
+                                
+                            @else
+                                <div class="btn-toolbar" role="toolbar">
+                                    @if($event->attendance_is_exit)
+                                        @if($event->attendance_opened)
+                                            <div class="btn-group mr-2" role="group">
+                                                <button class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
+                                                    <i class="bi bi-box-arrow-left"></i> Check Out
+                                                </button>
+                                            </div>
+                                        @endif
+                                    @elseif ($event->attendance_opened || $event->late)
                                         <div class="btn-group mr-2" role="group">
-                                            <button class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
-                                                <i class="bi bi-box-arrow-left"></i> Check Out
+                                            <button class="btn btn-success" onClick="checkIn({{ $registration->id }})">
+                                                <i class="bi bi-box-arrow-in-right"></i> Check In
                                             </button>
                                         </div>
                                     @endif
-                                @elseif ($event->attendance_opened || $event->late)
-                                    <div class="btn-group mr-2" role="group">
+                                    {{-- <div class="btn-group mr-2" role="group">
                                         <button class="btn btn-success" onClick="checkIn({{ $registration->id }})">
                                             <i class="bi bi-box-arrow-in-right"></i> Check In
                                         </button>
                                     </div>
-                                @endif
-                                {{-- <div class="btn-group mr-2" role="group">
-                                    <button class="btn btn-success" onClick="checkIn({{ $registration->id }})">
-                                        <i class="bi bi-box-arrow-in-right"></i> Check In
-                                    </button>
+                                    <div class="btn-group mr-2" role="group">
+                                        <button class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
+                                            <i class="bi bi-box-arrow-left"></i> Check Out
+                                        </button>
+                                    </div> --}}
                                 </div>
-                                <div class="btn-group mr-2" role="group">
-                                    <button class="btn btn-warning" onClick="checkOutInit({{ $registration->id }})">
-                                        <i class="bi bi-box-arrow-left"></i> Check Out
-                                    </button>
-                                </div> --}}
-                            </div>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -269,6 +296,29 @@
                                     @if($event->slots - $registrations_approved == 1)
                                         <input type="hidden" name="slots" value="1">
                                         <h1>Total: Rp {{$event->price}}</h1>
+                                        @if($event->event_offline_status == 1)
+                                            <h4 class="mt-3">Event Status</h4>
+                                            @if(Session::has('OfflineInput') && Session::get('OfflineInput') == "True")
+                                                <div class="alert alert-danger" role="alert">
+                                                    You must select one of below status
+                                                </div>
+                                            @endif
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="OnlineOfflineStatus" id="OnlineOfflineStatus1" value="0">
+                                                <label class="form-check-label" for="OnlineOfflineStatus1">
+                                                    Online
+                                                </label>
+                                            </div>
+                                            @if($event->offline_seats - $Offline_Registration > 0)
+                                                <div class="form-check mb-3">
+                                                    <input class="form-check-input" type="radio" name="OnlineOfflineStatus" id="OnlineOfflineStatus2" value="1">
+                                                    <label class="form-check-label" for="OnlineOfflineStatus2">
+                                                        Offline
+                                                    </label>
+                                                </div>
+                                            @endif
+                                            
+                                        @endif
                                         @if($event->price > 0)
                                             <p class="text text-danger fw-bold">You will be redirected to our payment form.</p>
                                         @endif

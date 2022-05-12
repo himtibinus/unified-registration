@@ -68,7 +68,7 @@ class EventController extends Controller
     {
         // Check whether the event exists
         $event = DB::table('events')->where('id', $id)->first();
-        if (!$event){
+        if (!$event) {
             Session::put('error', 'The event you requested is not found.');
             return redirect('home');
         }
@@ -82,7 +82,7 @@ class EventController extends Controller
         $event->late = new DateTime($event->date) < new DateTime(date("Y-m-d H:i:s"));
 
         // Check whether the user has been logged in and registered
-        if (Auth::check()){
+        if (Auth::check()) {
             $user = Auth::user();
             $registrations = DB::table('registration')->where('ticket_id', $user->id)->where('event_id', $event->id)->where('status', '!=', 1)->get();
             $rejected = DB::table('registration')->where('ticket_id', $user->id)->where('event_id', $event->id)->where('status', 1)->get();
@@ -92,9 +92,9 @@ class EventController extends Controller
         Session::remove('error');
 
         // Check whether the event is private
-        if ($event->private && !$admin_or_committee){
+        if ($event->private && !$admin_or_committee) {
             // Check whether the user has been registered to that event
-            if (count($registrations) == 0){
+            if (count($registrations) == 0) {
                 Session::put('error', 'The event you requested is not found.');
                 return redirect('home');
             }
@@ -106,25 +106,24 @@ class EventController extends Controller
         ];
 
         // If the registration is opened
-        if ($event->opened){
+        if ($event->opened) {
             // Check permissions and validation
             // Load from cache
             $event_permissions = Cache::get('event_permissions_' . $event->id, []);
-            if (count($event_permissions) == 0){
+            if (count($event_permissions) == 0) {
                 $event_permissions = DB::table('event_permissions')->join('fields', 'event_permissions.field_id', 'fields.id')->where('event_id', $event->id)->get();
                 Cache::put('event_permissions_' . $event->id, $event_permissions, 300);
             }
 
-            if ($user){
+            if ($user) {
                 $user_properties = DB::table('user_properties')->where('user_id', $user->id)->get();
                 $validation = parent::validateFields($event_permissions, $user_properties);
             }
         }
-
+        $offlineRegistration = DB::table('registration')->where('offline_status', '1')->whereNOTIn('status', ['1'])->get();
         if ($event->slots - count($registrations) <= 0) $validation->eligible_to_register = false;
-
         // Return view
-        return view('event-details', ['event' => $event, 'user' => $user, 'registrations' => $registrations, 'rejected' => $rejected, 'admin_or_committee' => $admin_or_committee, 'event_permissions' => $validation->event_permissions, 'eligible_to_register' => $validation->eligible_to_register]);
+        return view('event-details', ['event' => $event, 'user' => $user, 'registrations' => $registrations, 'rejected' => $rejected, 'admin_or_committee' => $admin_or_committee, 'event_permissions' => $validation->event_permissions, 'eligible_to_register' => $validation->eligible_to_register, 'Offline_Registration' => count($offlineRegistration)]);
     }
 
     /**
@@ -136,21 +135,21 @@ class EventController extends Controller
     public function edit(Request $request, $id)
     {
         // Make sure that the user is an admin or committee
-        if (!Auth::check()){
+        if (!Auth::check()) {
             $request->session()->put('error', 'Please log in to continue.');
             return redirect('home');
         }
 
         // Check whether the event exists
         $event = DB::table('events')->where('id', $id)->first();
-        if (!$event){
+        if (!$event) {
             $request->session()->put('error', 'This event does not exist.');
             return redirect('home');
         }
 
         // Check whether the user is an admin or committee
         $check = parent::checkAdminOrCommittee(Auth::id(), $id);
-        if (!$check->admin && !$check->committee){
+        if (!$check->admin && !$check->committee) {
             // If not simply return to main page
             return redirect('events/' . $id);
         }
@@ -161,8 +160,14 @@ class EventController extends Controller
         $event->current_seats = count($data);
         $event->attending = 0;
         $event->attended = 0;
-        foreach ($data as $registration){
+        $event->offline_attandance = 0;
+        $event->online_attandance = 0;
+        foreach ($data as $registration) {
             if ($registration->status == 1) $event->current_seats--;
+            else {
+                if ($registration->offline_status == 0) $event->online_attandance++;
+                else $event->offline_attandance++;
+            }
             if ($registration->status == 4) $event->attending++;
             if ($registration->status == 5) $event->attended++;
         }
@@ -185,91 +190,100 @@ class EventController extends Controller
         $force_change = false;
         if ($request->has('flag-force-change') && $request->input('flag-force-change') == "checked") $force_change = true;
 
-        foreach($request->all() as $key => $value) {
-            if (Str::startsWith($key, "status-") && $value >= 0){
+        foreach ($request->all() as $key => $value) {
+            if (Str::startsWith($key, "status-offline-") && $value >= 0) {
+                $key = substr($key, 15);
+                DB::table('registration')->where('id', $key)->update(['offline_status' => $value]);
+            } else if (Str::startsWith($key, "status-") && $value >= 0) {
                 $key = substr($key, 7);
                 DB::table('registration')->where('id', $key)->update(['status' => $value]);
-            } else if (Str::startsWith($key, "action-")) switch ($key){
+            } else if (Str::startsWith($key, "action-")) switch ($key) {
                 case "action-update-kicker":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['kicker' => $value]);
-                break;
+                    break;
                 case "action-update-name":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['name' => $value]);
-                break;
+                    break;
                 case "action-update-date":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['date' => new DateTime($value)]);
-                break;
+                    break;
                 case "action-update-location":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['location' => $value]);
-                break;
+                    break;
                 case "action-update-price":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['price' => $value]);
-                break;
+                    break;
                 case "action-update-cover_image":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['cover_image' => $value]);
-                break;
+                    break;
                 case "action-update-theme_color_foreground":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['theme_color_foreground' => $value]);
-                break;
+                    break;
                 case "action-update-theme_color_background":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['theme_color_background' => $value]);
-                break;
+                    break;
                 case "action-update-description_public":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['description_public' => $value]);
-                break;
+                    break;
                 case "action-update-description_pending":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['description_pending' => $value]);
-                break;
+                    break;
                 case "action-update-description_private":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['description_private' => $value]);
-                break;
+                    break;
                 case "action-registration-status":
                     if ($value == "enabled") DB::table('events')->where('id', $id)->update(['opened' => 1]);
                     else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['opened' => 0]);
-                break;
+                    break;
                 case "action-registration-private":
                     if ($value == "private") DB::table('events')->where('id', $id)->update(['private' => 1]);
                     else if ($value == "public") DB::table('events')->where('id', $id)->update(['private' => 0]);
-                break;
+                    break;
                 case "action-registration-auto_accept":
                     if ($value == "enabled") DB::table('events')->where('id', $id)->update(['auto_accept' => 1]);
                     else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['auto_accept' => 0]);
-                break;
+                    break;
+                case "action-registration-event_offline_status":
+                    if ($value == "enabled") DB::table('events')->where('id', $id)->update(['event_offline_status' => 1]);
+                    else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['event_offline_status' => 0]);
+                    break;
                 case "action-update-seats":
                     if ($value > 0) DB::table('events')->where('id', $id)->update(['seats' => $value]);
-                break;
+                    break;
+                case "action-update-offline_seats":
+                    if ($value >= 0) DB::table('events')->where('id', $id)->update(['offline_seats' => $value]);
+                    break;
                 case "action-update-slots":
                     if ($value > 0) DB::table('events')->where('id', $id)->update(['slots' => $value]);
-                break;
+                    break;
                 case "action-update-team_members":
                     if ($value > 0) DB::table('events')->where('id', $id)->update(['team_members' => $value]);
-                break;
+                    break;
                 case "action-update-team_members_reserve":
                     if ($value > 0) DB::table('events')->where('id', $id)->update(['team_members_reserve' => $value]);
-                break;
+                    break;
                 case "action-update-payment_link":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['payment_link' => $value]);
-                break;
+                    break;
                 case "action-attendance-status":
                     if ($value == "enabled") DB::table('events')->where('id', $id)->update(['attendance_opened' => 1]);
                     else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['attendance_opened' => 0]);
-                break;
+                    break;
                 case "action-attendance-type":
                     if ($value == "entrance") DB::table('events')->where('id', $id)->update(['attendance_is_exit' => 0]);
                     else if ($value == "exit") DB::table('events')->where('id', $id)->update(['attendance_is_exit' => 1]);
-                break;
+                    break;
                 case "action-update-url_link":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['url_link' => $value]);
-                break;
+                    break;
                 case "action-update-totp_key":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['totp_key' => $value]);
-                break;
+                    break;
             }
             // Clear cache
             Cache::forget('availableEvents');
             $availableEvents = DB::table('events')->where('private', false)->where('opened', true)->get();
             Cache::put('availableEvents', $availableEvents, 300);
-
         }
 
         return redirect("/events/" . $id . '/edit');
@@ -309,25 +323,25 @@ class EventController extends Controller
         $timestamp = Carbon::now();
         $event->late = new DateTime($event->date) < new DateTime(date("Y-m-d H:i:s"));
 
-        if ($is_exit){
+        if ($is_exit) {
             // Get the exit token
             $token = $request->input('token');
             if (strlen($token) == 0 || $token != '' . $event->totp_key) return response('Incorrect token', 401);
 
-            if (strlen($registration->check_in_timestamp) > 0){
+            if (strlen($registration->check_in_timestamp) > 0) {
                 // Record exit attendance
-                DB::table('registration')->where('id',$id)->update(['check_out_timestamp' => $timestamp, 'status' => 5]);
+                DB::table('registration')->where('id', $id)->update(['check_out_timestamp' => $timestamp, 'status' => 5]);
             } else {
                 // Record new attendance
-                DB::table('registration')->where('id',$id)->update(['check_out_timestamp' => $timestamp, 'status' => 4, 'remarks' => 'Late']);
+                DB::table('registration')->where('id', $id)->update(['check_out_timestamp' => $timestamp, 'status' => 4, 'remarks' => 'Late']);
             }
         } else if (strlen($registration->check_in_timestamp . $registration->check_out_timestamp) == 0) {
-            if ($event->attendance_opened){
+            if ($event->attendance_opened) {
                 // Record new attendance
-                DB::table('registration')->where('id',$id)->update(['check_in_timestamp' => $timestamp, 'status' => 4, 'remarks' => 'On Time']);
+                DB::table('registration')->where('id', $id)->update(['check_in_timestamp' => $timestamp, 'status' => 4, 'remarks' => 'On Time']);
             } else if ($event->late) {
                 // Record new attendance
-                DB::table('registration')->where('id',$id)->update(['check_in_timestamp' => $timestamp, 'status' => 4, 'remarks' => 'Late']);
+                DB::table('registration')->where('id', $id)->update(['check_in_timestamp' => $timestamp, 'status' => 4, 'remarks' => 'Late']);
             }
         }
         // return response()->json([
@@ -343,13 +357,14 @@ class EventController extends Controller
     }
 
     // Module to get user details
-    public function getUserDetails(Request $request){
+    public function getUserDetails(Request $request)
+    {
         // Ensure that the user has logged in
         if (!Auth::check()) return response()->json(['error' => 'You are not authenticated']);
         // Ensure that the user has complete payload
         if (!$request->has('email') || !$request->has('eventId')) return response()->json(['error' => 'Incomplete Request']);
         $user = null;
-        if ($request->input('email') == Auth::user()->email){
+        if ($request->input('email') == Auth::user()->email) {
             if ($request->input('allowSelf') == false) return response()->json(['error' => 'You should not add yourself as a member']);
             $user = Auth::user();
         } else {
@@ -364,7 +379,7 @@ class EventController extends Controller
 
         // Load from cache
         $event_permissions = Cache::get('event_permissions_' . $event->id, []);
-        if (count($event_permissions) == 0){
+        if (count($event_permissions) == 0) {
             $event_permissions = DB::table('event_permissions')->join('fields', 'event_permissions.field_id', 'fields.id')->where('event_id', $event->id)->get();
             Cache::put('event_permissions_' . $event->id, $event_permissions, 300);
         }
@@ -385,7 +400,8 @@ class EventController extends Controller
     }
 
     // Module to register to certain events
-    public function registerToEvent(Request $request){
+    public function registerToEvent(Request $request)
+    {
         if (!Auth::check()) return redirect("/home");
 
         // Get event ID
@@ -397,12 +413,11 @@ class EventController extends Controller
 
         // Set the Payment Code
         $payment_code = null;
-
         // Check on database whether the event exists
         $event = DB::table("events")->where("id", $event_id)->first();
         $currentTickets = DB::table('registration')->selectRaw('count(*) as total')->where('event_id', $event->id)->where('status', '!=', 1)->first();
 
-        if (!$event){
+        if (!$event) {
             $request->session()->put('error', "Event not found.");
             return redirect('/home');
         } else if ($currentTickets->total >= $event->seats) {
@@ -414,7 +429,14 @@ class EventController extends Controller
         } else if ($event->team_members + $event->team_members_reserve > 0) $team_required = true;
 
         if ($event->price > 0) $payment_code = uniqid();
-
+        $is_Offline = 0;
+        if ($event->event_offline_status == 1 && !$request->has("OnlineOfflineStatus")) {
+            return back()->with('OfflineInput', 'True');
+        } else if ($event->event_offline_status == 0) {
+            $is_Offline = 0;
+        } else if ($event->event_offline_status == 2 || $event->event_offline_status == 1) {
+            $is_Offline = 1;
+        }
         // Create an array of users to be validated
         $leader = Auth::user();
         $members = [];
@@ -429,15 +451,15 @@ class EventController extends Controller
         ];
 
         // Get whether teams are needed
-        if ($team_required == true){
-            if (!$request->has("create_team") || !$request->has("team_name") || $request->input("team_name") == ""){
+        if ($team_required == true) {
+            if (!$request->has("create_team") || !$request->has("team_name") || $request->input("team_name") == "") {
                 $request->session()->put('error', "You will need to create a team for " . $event->name . ".");
                 return redirect('/home');
             }
 
             // Team members
-            for ($i = 0; $i < $event->team_members; $i++){
-                if (!$request->has('team_member_' . $i)){
+            for ($i = 0; $i < $event->team_members; $i++) {
+                if (!$request->has('team_member_' . $i)) {
                     $request->session()->put('error', "Incomplete team members");
                     return redirect('/home');
                 }
@@ -445,7 +467,7 @@ class EventController extends Controller
             }
 
             // Reserve members
-            for ($i = 0; $i < $event->team_members; $i++){
+            for ($i = 0; $i < $event->team_members; $i++) {
                 if ($request->has('team_member_reserve_' . $i)) array_push($reserve, DB::table('users')->where('email', 'team_member_reserve_' . $i));
             }
         }
@@ -457,23 +479,23 @@ class EventController extends Controller
 
         $validation_failed = 0;
 
-        foreach ($queue as $user){
+        foreach ($queue as $user) {
             $user_properties = DB::table('user_properties')->where('user_id', $user->id)->get();
             $registrations = DB::table('registration')->where('event_id', $event->id)->where('ticket_id', $user->id)->where('status', '!=', 1)->get();
             $validation = parent::validateFields($event_permissions, $user_properties);
             if ($event->slots - count($registrations) <= 0) $validation->eligible_to_register = false;
 
-            if (!$validation->eligible_to_register){
+            if (!$validation->eligible_to_register) {
                 $validation_failed++;
             }
         }
 
-        if ($validation_failed > 0){
+        if ($validation_failed > 0) {
             $request->session()->put('error', "You or your team members are not eligible to register to this event.");
             return redirect('/home');
         }
 
-        if ($team_required == true){
+        if ($team_required == true) {
             // Create a new team
             $team_id = DB::table("teams")->insertGetId(["name" => $request->input("team_name"), "event_id" => $event_id]);
 
@@ -483,7 +505,7 @@ class EventController extends Controller
 
             // Assign the User ID of the team leader
             $tempdetails = json_decode(json_encode(Auth::user()), true);
-            for ($j = 0; $j < $slots; $j++){
+            for ($j = 0; $j < $slots; $j++) {
                 $temp = $draft;
                 $temp["ticket_id"] = $tempdetails["id"];
                 $temp["remarks"] = "Team Leader";
@@ -492,11 +514,11 @@ class EventController extends Controller
             }
 
             // Find the User ID of team members
-            for ($i = 0; $i < $event->team_members; $i++){
+            for ($i = 0; $i < $event->team_members; $i++) {
                 $tempdetails = json_decode(json_encode(DB::table("users")->where("email", $request->input("team_member_" . ($i + 1)))->first()), true);
-                for ($j = 0; $j < $slots; $j++){
+                for ($j = 0; $j < $slots; $j++) {
                     $temp = $draft;
-                    echo(print_r($tempdetails));
+                    echo (print_r($tempdetails));
                     $temp["ticket_id"] = $tempdetails["id"];
                     $temp["remarks"] = "Team Member";
                     if ($slots > 1) $temp["remarks"] = $temp["remarks"] . ", Slot " . ($j + 1);
@@ -514,11 +536,11 @@ class EventController extends Controller
             }
 
             // Find the User ID of reseve team members
-            for ($i = 0; $i < $event->team_members_reserve; $i++){
+            for ($i = 0; $i < $event->team_members_reserve; $i++) {
                 if (!$request->has("team_member_reserve_" . ($i + 1)) || $request->input("team_member_reserve_" . ($i + 1)) == "") continue;
-                $tempdetails = json_decode(json_encode(DB::table("users")->where("email", $request->input("team_member_reserve_" .($i + 1)))->first()), true);
-                for ($j = 0; $j < $slots; $j++){
-                    if ($request->has("team_member_reserve_" . ($i + 1))){
+                $tempdetails = json_decode(json_encode(DB::table("users")->where("email", $request->input("team_member_reserve_" . ($i + 1)))->first()), true);
+                for ($j = 0; $j < $slots; $j++) {
+                    if ($request->has("team_member_reserve_" . ($i + 1))) {
                         $temp = $draft;
                         $temp["ticket_id"] = $tempdetails["id"];
                         $temp["remarks"] = "Team Member (Reserve)";
@@ -540,7 +562,7 @@ class EventController extends Controller
             DB::table("registration")->insert($query);
         } else {
             // Assign the participant
-            DB::table("registration")->insert(["ticket_id" => Auth::user()->id, "event_id" => $event_id, "status" => (($event->auto_accept == true) ? 2 : 0), "payment_code" => $payment_code]);
+            DB::table("registration")->insert(["ticket_id" => Auth::user()->id, "event_id" => $event_id, "status" => (($event->auto_accept == true) ? 2 : 0), "payment_code" => $payment_code, "offline_status" => $is_Offline]);
         }
 
         // Send Email for Payment
@@ -551,7 +573,7 @@ class EventController extends Controller
         $email_template['message'] = 'Thank you for registering to ' . $event_title . '.';
         $email_template['email'] = $leader->email;
 
-        if ($event->price == 0 && $event->auto_accept == true){
+        if ($event->price == 0 && $event->auto_accept == true) {
             $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
             if (strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
         } else {
@@ -562,27 +584,29 @@ class EventController extends Controller
         DB::table('email_queue')->insert($email_template);
 
         // Return Response
-        if ($event->price > 0){
+        if ($event->price > 0) {
             if (strlen($event->payment_link) > 0) return redirect($this->getPaymentLink($event, (object) ['payment_code' => $payment_code]));
             else return redirect('/pay/' . $payment_code);
         }
         return redirect('/events/' . $event_id);
     }
 
-    public static function getPaymentLink($event, $registration){
+    public static function getPaymentLink($event, $registration)
+    {
         $search = array("%NAME", "%EMAIL", "%PAYMENT_CODE", "%EVENT_ID");
         $replace = array(Auth::user()->name, Auth::user()->email, $registration->payment_code, $event->id);
         return str_replace($search, $replace, $event->payment_link);
     }
 
     // Module to register attendance queue
-    public static function insertAttendanceQueue(Request $request){
+    public static function insertAttendanceQueue(Request $request)
+    {
         // Quick validation
         if (!$request->has('clientId') || !$request->has('email') || !$request->has('token')) return response('Incomplete Request', 400);
 
         // Load from cache
         $attendance_clients = Cache::get('attendance_clients', []);
-        if (count($attendance_clients) == 0){
+        if (count($attendance_clients) == 0) {
             $query = DB::table('attendance_clients')->get();
             for ($i = 0; $i < count($query); $i++) $attendance_clients[$query[$i]->id] = $query[$i]->enabled;
             Cache::put('attendance_clients', $attendance_clients, 300);
@@ -603,13 +627,13 @@ class EventController extends Controller
         $token_validated = false;
 
         $event_tokens = Cache::get('event_tokens', []);
-        if (count($event_tokens) == 0){
+        if (count($event_tokens) == 0) {
             $event_tokens = DB::table('events')->where('attendance_opened', true)->where('attendance_is_exit', true)->whereNotNull('totp_key')->get();
             Cache::put('event_tokens', $event_tokens, 300);
         }
 
         // Make sure that the token matches and the event is opened
-        for ($i = 0; $i < count($event_tokens); $i++){
+        for ($i = 0; $i < count($event_tokens); $i++) {
             if ($event_tokens[$i]->totp_key == $request->get('token')) $token_validated = true;
         }
 
