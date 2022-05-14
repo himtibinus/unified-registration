@@ -18,13 +18,13 @@
     <div class="row justify-content-center">
         @component('components.status-badge')
         @endcomponent
-        <div class="col-md-8">
+        <div class="col-md-10 col-lg-8">
             <h1 class="mb-4">Your Events</h1>
             @if (!Auth::check())
                 <div class="card mb-4">
                     <div class="card-header h4 bg-danger text-white">{{ __('You haven\'t logged in yet.') }}</div>
                     <div class="card-body">
-                        <b>{{ __('First time here?') }}</b> {{ __('Please sign up or login to a ') . config('app.name', 'Laravel') . __(' account to join these events.') }}
+                        <b>{{ __('First time here?') }}</b> {{ __('Please ') }}<a href="{{ route('register') }}">sign up</a>{{ __(' or ') }} <a href="{{ route('login') }}">login</a>{{ __(' to a ') . config('app.name', 'Laravel') . __(' account to join these events.') }}
                     </div>
                 </div>
             @elseif(count($registeredEvents) == 0)

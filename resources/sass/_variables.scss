@@ -3,7 +3,6 @@ $body-bg: #f8fafc;
 
 // Typography
 $font-family-sans-serif: "Public Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Ubuntu, Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
-$font-size-base: 0.9rem;
 $line-height-base: 1.6;
 
 // Colors
@@ -17,10 +16,15 @@ $yellow: #ffed4a;
 $green: #38c172;
 $teal: #4dc0b5;
 $cyan: #6cb2eb;
-$primary: #01224d;
+$primary: #415BA8;
 
 // // Enable gradient backgrounds
 // $enable-gradients: true;
 
+$border-radius: 1.25rem;
+
 // Buttons
+$btn-transition: 200ms linear;
 $btn-font-weight: 600;
+$btn-padding-x: 1rem;
+$btn-padding-y: 0.4rem;

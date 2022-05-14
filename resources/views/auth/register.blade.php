@@ -5,7 +5,7 @@
     @component('components.status-badge')
     @endcomponent
     <div class="row justify-content-center">
-        <form method="POST" action="{{ route('register') }}" class="col-md-8 pt-4">
+        <form method="POST" action="{{ route('register') }}" class="col-md-10 col-lg-8 pt-4">
             @csrf
             <div class="card mb-4">
                 <div class="card-body">
@@ -14,12 +14,12 @@
                 </div>
             </div>
             <div class="card mb-4">
-                <div class="card-header h4 bg-primary text-white">{{ __('Account Details') }}</div>
+                <div class="card-header h5 bg-primary text-white">{{ __('Account Details') }}</div>
                 <div class="card-body">
                     <div class="form-group row">
                         <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}<b class="text-danger">*</b></label>
                         <div class="col-md-6">
-                            <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                            <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus placeholder="Your name">
                             @error('name')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -43,15 +43,15 @@
                         </div>
                     </div>
                     <div class="alert alert-info" role="alert">
-                        <b>For BINUSIAN Participants:</b> Make sure to select <b>BINUS University</b> to be eligible for <a href="https://student.binus.ac.id/sat/" target="_blank">Student Activity Transcript (SAT)</a> points. Use <b>@binus.ac.id</b> email address whenever possible.
+                        <b>For BINUSIAN participants:</b> Make sure to select <b>BINUS University</b> to be eligible for <a href="https://student.binus.ac.id/sat/" target="_blank">Student Activity Transcript (SAT)</a> points. Use <b>@binus.ac.id</b> email address whenever possible.
                     </div>
                     <div class="alert alert-warning" role="alert">
-                        <b>For PPTI BCA Participants at TECHNO 2021:</b> Make sure to select <b>BINUS University</b> and select <b>PPTI BCA</b> as your Regional/Campus Location.
+                        <b>For PPTI BCA participants at TECHNO 2021:</b> Make sure to select <b>BINUS University</b> and select <b>PPTI BCA</b> as your campus location.
                     </div>
                     <div class="form-group row" id="nim-container">
                         <label for="nim" class="col-md-4 col-form-label text-md-right">{{ __('NIM') }}<b class="text-danger">*</b></label>
                         <div class="col-md-6">
-                            <input id="nim" type="number" class="form-control @error('nim') is-invalid @enderror" name="nim" value="{{ old('nim') }}">
+                            <input id="nim" type="number" class="form-control @error('nim') is-invalid @enderror" name="nim" value="{{ old('nim') }}" placeholder="2xxxxxxxxx">
 
                             @error('nim')
                                 <span class="invalid-feedback" role="alert">
@@ -61,9 +61,10 @@
                         </div>
                     </div>
                     <div class="form-group row" id="binus_regional-container">
-                        <label for="binus_regional" class="col-md-4 col-form-label text-md-right">Regional (Campus Location)<b class="text-danger">*</b></label>
+                        <label for="binus_regional" class="col-md-4 col-form-label text-md-right">Campus<b class="text-danger">*</b></label>
                         <div class="col-md-6">
                             <select class="form-control" id="binus_regional" name="binus_regional">
+                                <option>None/Uncategorized</option>
                                 <option value="Alam Sutera">Alam Sutera</option>
                                 <option value="Bekasi">Bekasi</option>
                                 <option value="Kemanggisan">Kemanggisan (Anggrek, Syahdan, Kijang)</option>
@@ -78,7 +79,7 @@
                         </div>
                     </div>
                     <div class="form-group row" id="fyp_batch-container">
-                        <label for="fyp_batch" class="col-md-4 col-form-label text-md-right">FYP Batch (for TECHNO 2021)<b class="text-danger">*</b></label>
+                        <label for="fyp_batch" class="col-md-4 col-form-label text-md-right">FYP batch (for TECHNO events)<b class="text-danger">*</b></label>
                         <div class="col-md-6">
                             <select class="form-control" id="fyp_batch" name="fyp_batch">
                                 <option value="0">None</option>
@@ -102,9 +103,9 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="major" class="col-md-4 col-form-label text-md-right">{{ __('Major / Study Program') }}<b class="text-danger">*</b></label>
+                        <label for="major" class="col-md-4 col-form-label text-md-right">{{ __('Major / study program') }}<b class="text-danger">*</b></label>
                         <div class="col-md-6">
-                            <input id="major" type="text" class="form-control @error('major') is-invalid @enderror" name="major" value="{{ old('major') }}" list="major-recommendations">
+                            <input id="major" type="text" class="form-control @error('major') is-invalid @enderror" name="major" value="{{ old('major') }}" list="major-recommendations" placeholder="Your major/ study program">
                             @error('major')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -122,12 +123,12 @@
                 </div>
             </div>
             <div class="card mb-4">
-                <div class="card-header h4 bg-primary text-white">{{ __('Contact Details') }}</div>
+                <div class="card-header h5 bg-primary text-white">{{ __('Contact Details') }}</div>
                 <div class="card-body">
                     <div class="form-group row">
-                        <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}<b class="text-danger">*</b></label>
+                        <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Email address') }}<b class="text-danger">*</b></label>
                         <div class="col-md-6">
-                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                            <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Your email address">
                             @error('email')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -136,9 +137,9 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="phone" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}<b class="text-danger">*</b></label>
+                        <label for="phone" class="col-md-4 col-form-label text-md-right">{{ __('Phone number') }}<b class="text-danger">*</b></label>
                         <div class="col-md-6">
-                            <input id="phone" type="tel" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" required autocomplete="tel">
+                            <input id="phone" type="tel" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" required autocomplete="tel" placeholder="Your phone number">
                             @error('phone')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -147,9 +148,9 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="line" class="col-md-4 col-form-label text-md-right">{{ __('LINE Registered Number or LINE ID') }}</label>
+                        <label for="line" class="col-md-4 col-form-label text-md-right">{{ __('LINE registered number or LINE ID') }}</label>
                         <div class="col-md-6">
-                            <input id="line" type="text" class="form-control @error('line') is-invalid @enderror" name="line" value="{{ old('line') }}" autocomplete="tel">
+                            <input id="line" type="text" class="form-control @error('line') is-invalid @enderror" name="line" value="{{ old('line') }}" autocomplete="tel" placeholder="Your LINE registered number or LINE ID">
                             @error('line')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -158,9 +159,9 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="whatsapp" class="col-md-4 col-form-label text-md-right">{{ __('WhatsApp Registered Number') }}</label>
+                        <label for="whatsapp" class="col-md-4 col-form-label text-md-right">{{ __('WhatsApp registered number') }}</label>
                         <div class="col-md-6">
-                            <input id="whatsapp" type="text" class="form-control @error('whatsapp') is-invalid @enderror" name="whatsapp" value="{{ old('whatsapp') }}" autocomplete="tel">
+                            <input id="whatsapp" type="text" class="form-control @error('whatsapp') is-invalid @enderror" name="whatsapp" value="{{ old('whatsapp') }}" autocomplete="tel" placeholder="Your WhatsApp registered number">
                             @error('whatsapp')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -171,12 +172,12 @@
                 </div>
             </div>
             <div class="card mb-4">
-                <div class="card-header h4 bg-primary text-white">{{ __('Confirm Password') }}</div>
+                <div class="card-header h5 bg-primary text-white">{{ __('Confirm Password') }}</div>
                 <div class="card-body">
                     <div class="form-group row">
                         <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}<b class="text-danger">*</b></label>
                         <div class="col-md-6">
-                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
+                            <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password" placeholder="********">
                             @error('password')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -185,15 +186,15 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm Password') }}<b class="text-danger">*</b></label>
+                        <label for="password-confirm" class="col-md-4 col-form-label text-md-right">{{ __('Confirm password') }}<b class="text-danger">*</b></label>
                         <div class="col-md-6">
-                            <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                            <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password" placeholder="********">
                         </div>
                     </div>
                     <div class="form-group row mb-0">
                         <div class="col-md-6 offset-md-4">
-                            <button type="submit" class="btn btn-primary">
-                                {{ __('Next') }}
+                            <button type="submit" class="btn btn-primary mt-2">
+                                {{ __('Submit') }}
                             </button>
                         </div>
                     </div>

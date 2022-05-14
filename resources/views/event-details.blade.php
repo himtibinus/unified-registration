@@ -363,7 +363,7 @@
                                 </form>
                             @endif
                         @else
-                            <p>Please log in or sign up for a new <b>{{ env('APP_NAME') }} account</b> to register and join this event.</p>
+                            <p>Please <a href="{{ route('register') }}">sign up</a> or <a href="{{ route('login') }}">login</a> for a new <b>{{ env('APP_NAME') }} account</b> to register and join this event.</p>
                             <a href="/register" class="btn btn-primary">Sign Up</a>
                             <a href="/login" class="btn btn-outline-primary">Login</a>
                         @endif

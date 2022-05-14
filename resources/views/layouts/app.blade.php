@@ -31,41 +31,46 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-dark shadow-sm fixed-top w-100">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                <a class="navbar-brand fw-bold me-0" href="{{ url('/') }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <img src="{{ url('./assets/himti-mono.png') }}" width="45px" alt="">
+                        <p class="d-none d-md-block app-title mb-0 ms-2 fw-bold">
+                            {{ config('app.name', 'Laravel') }}</p>
+                    </div>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                <p class="app-mobile-title d-md-none app-title mb-0 fw-bold text-white">
+                    HIMTI Registration</p>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
-
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ml-auto">
-                        <!-- Authentication Links -->
+                <div class="collapse navbar-collapse flex-row-reverse" id="navbarSupportedContent">
+                    <ul class="navbar-nav">
                         @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                            @if (Route::has('register'))
+                                <li class="nav-item me-4">
+                                    <a class="nav-link fw-bold" href="{{ route('register') }}">{{ __('Register') }}</a>
                                 </li>
+                            @endif
+                            @if (Route::has('login'))
+                            <li class="nav-item nav-item-custom d-flex">
+                                <a class="btn btn-light d-flex align-items-center gap-1 lh-normal" href="{{ route('login') }}">                                                             <i class="bi bi-box-arrow-in-left"></i>
+                                    <span>Login</span>
+                                </a>
+    
+                                <form id="logout-form" action="https://testing.himti.or.id/logout" method="POST" class="d-none">
+                                    <input type="hidden" name="_token" value="p8QEcoj1U8jpS7kLeX8R87Y12LYjPQLIXChCWtgQ">                            </form>
+                            </li>
                             @endif
 
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
+                            
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    <i class="bi bi-person-circle"></i>
-                                    {{ Auth::user()->name }}
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle " href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    <span>{{ Auth::user()->name }}</span>
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -93,7 +98,10 @@
         <main>
             @yield('content')
         </main>
-
+        <footer class="container">
+            <hr>
+            <p class="text-center">© 2021–2022 Research and Development, <a href="https://himti.or.id" class="backlink-himti text-decoration-none">HIMTI BINUS University</a>.</p>
+        </footer>
     </div>
 </body>
 </html>

@@ -4,19 +4,11 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-// Bootstrap Icons
-@import "~bootstrap-icons/font/bootstrap-icons.css";
-
 // Fonts
 @import "https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap";
 
-// Jumbotron shim for Bootstrap 5 upgrade
-.jumbotron {
-    padding: 2rem 1rem;
-    margin-bottom: 2rem;
-    background-color: #e9ecef;
-    border-radius: .3rem;
-}
+// Bootstrap Icons
+@import "~bootstrap-icons/font/bootstrap-icons.css";
 
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
@@ -45,11 +37,15 @@
 }
 .card {
     border-radius: 15px;
-    box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: $box-shadow;
 }
 .card-img-top, .card-header:first-child {
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
+}
+.card-header{
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
 }
 .card-auto {
     flex-direction: row;
@@ -116,3 +112,39 @@
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.25);
 }
 
+nav{
+    background-color: rgb(14 38 110 / 75%) !important;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+main{
+    margin-top: 70px;
+    min-height: 75vh;
+}
+
+.backlink-himti:hover{
+    text-decoration: underline!important;
+}
+
+.btn-light{
+    color: $primary;
+    border: 2px solid #fff;
+}
+
+.btn-light:hover{
+    color: #fff!important;
+    background: transparent!important;
+}
+
+@media screen and (max-width: 767px) {
+    .app-mobile-title{
+        font-size: 20px;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    .app-mobile-title{
+        font-size: 16px;
+    }
+}
