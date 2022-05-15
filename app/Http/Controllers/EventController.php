@@ -17,6 +17,47 @@ use Illuminate\Support\Facades\Session;
 
 class EventController extends Controller
 {
+    public function encrypt($data, $password)
+    {
+        $iv = substr(sha1(mt_rand()), 0, 16);
+        $password = sha1($password);
+
+        $salt = sha1(mt_rand());
+        $saltWithPassword = hash('sha256', $password . $salt);
+
+        $encrypted = openssl_encrypt(
+            "$data",
+            'aes-256-cbc',
+            "$saltWithPassword",
+            0,
+            $iv
+        );
+        $msg_encrypted_bundle = "$iv:$salt:$encrypted";
+        return $msg_encrypted_bundle;
+    }
+
+
+    public function decrypt($msg_encrypted_bundle, $password)
+    {
+        $password = sha1($password);
+
+        $components = explode(':', $msg_encrypted_bundle);
+        $iv            = $components[0];
+        $salt          = hash('sha256', $password . $components[1]);
+        $encrypted_msg = $components[2];
+
+        $decrypted_msg = openssl_decrypt(
+            $encrypted_msg,
+            'aes-256-cbc',
+            $salt,
+            0,
+            $iv
+        );
+
+        if ($decrypted_msg === false)
+            return false;
+        return $decrypted_msg;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -120,10 +161,9 @@ class EventController extends Controller
                 $validation = parent::validateFields($event_permissions, $user_properties);
             }
         }
-        $offlineRegistration = DB::table('registration')->where('offline_status', '1')->whereNOTIn('status', ['1'])->get();
         if ($event->slots - count($registrations) <= 0) $validation->eligible_to_register = false;
         // Return view
-        return view('event-details', ['event' => $event, 'user' => $user, 'registrations' => $registrations, 'rejected' => $rejected, 'admin_or_committee' => $admin_or_committee, 'event_permissions' => $validation->event_permissions, 'eligible_to_register' => $validation->eligible_to_register, 'Offline_Registration' => count($offlineRegistration)]);
+        return view('event-details', ['event' => $event, 'user' => $user, 'registrations' => $registrations, 'rejected' => $rejected, 'admin_or_committee' => $admin_or_committee, 'event_permissions' => $validation->event_permissions, 'eligible_to_register' => $validation->eligible_to_register]);
     }
 
     /**
@@ -434,8 +474,10 @@ class EventController extends Controller
             return back()->with('OfflineInput', 'True');
         } else if ($event->event_offline_status == 0) {
             $is_Offline = 0;
-        } else if ($event->event_offline_status == 2 || $event->event_offline_status == 1) {
+        } else if ($event->event_offline_status == 2) {
             $is_Offline = 1;
+        } else {
+            $is_Offline  = $request->OnlineOfflineStatus;
         }
         // Create an array of users to be validated
         $leader = Auth::user();
@@ -501,7 +543,12 @@ class EventController extends Controller
 
             // Assign the database template
             $query = [];
-            $draft = ["event_id" => $event_id, "status" => (($event->auto_accept == true) ? 2 : 0), "payment_code" => $payment_code, "team_id" => $team_id, "ticket_id" => null, "remarks" => null];
+            if ($is_Offline == 0) {
+                $draft = ["event_id" => $event_id, "status" => (($event->auto_accept == true) ? 2 : 0), "payment_code" => $payment_code, "team_id" => $team_id, "ticket_id" => null, "remarks" => null];
+            } else {
+                $draft = ["event_id" => $event_id, "status" => (($event->offline_auto_accept == true) ? 2 : 0), "payment_code" => $payment_code, "team_id" => $team_id, "ticket_id" => null, "remarks" => null];
+            }
+
 
             // Assign the User ID of the team leader
             $tempdetails = json_decode(json_encode(Auth::user()), true);
@@ -529,7 +576,8 @@ class EventController extends Controller
                 $email_draft = $email_template;
                 $email_draft['subject'] = 'You have been invited to join ' . $event_title . ' by ' . $leader->name;
                 $email_draft['message'] = 'You have been invited by ' . $leader->name . ' (' . $leader->email . ') to join as a member of "' . $request->input("team_name") . '" to join ' . $event_title . PHP_EOL . PHP_EOL . 'Your team and ticket details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being added by mistake, please contact the respective event committees.';
-                if ($event->price == 0 && $event->auto_accept == true && strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
+                if ($event->price == 0 && $is_Offline == 0 && $event->auto_accept == true && strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
+                if ($event->price == 0 && $is_Offline == 1 && $event->offline_auto_accept == true && strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
                 else if (strlen($event->description_pending) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_pending;
                 $email_draft['email'] = $tempdetails->email;
                 DB::table('email_queue')->insert($email_draft);
@@ -553,7 +601,8 @@ class EventController extends Controller
                 $email_draft = $email_template;
                 $email_draft['subject'] = 'You have been invited to join ' . $event_title . ' by ' . $leader->name;
                 $email_draft['message'] = 'You have been invited by ' . $leader->name . ' (' . $leader->email . ') to join as a reserve member of "' . $request->input("team_name") . '" to join ' . $event_title . PHP_EOL . PHP_EOL . 'Your team and ticket details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being added by mistake, please contact the respective event committees.';
-                if ($event->price == 0 && $event->auto_accept == true && strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
+                if ($event->price == 0 && $is_Offline == 0 &&  $event->auto_accept == true && strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
+                if ($event->price == 0 && $is_Offline == 1 && $event->offline_auto_accept == true && strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
                 else if (strlen($event->description_pending) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_pending;
                 $email_draft['email'] = $tempdetails->email;
                 DB::table('email_queue')->insert($email_draft);
@@ -562,7 +611,11 @@ class EventController extends Controller
             DB::table("registration")->insert($query);
         } else {
             // Assign the participant
-            DB::table("registration")->insert(["ticket_id" => Auth::user()->id, "event_id" => $event_id, "status" => (($event->auto_accept == true) ? 2 : 0), "payment_code" => $payment_code, "offline_status" => $is_Offline]);
+            if ($is_Offline == 0) {
+                DB::table("registration")->insert(["ticket_id" => Auth::user()->id, "event_id" => $event_id, "status" => (($event->auto_accept == true) ? 2 : 0), "payment_code" => $payment_code, "offline_status" => $is_Offline]);
+            } else {
+                DB::table("registration")->insert(["ticket_id" => Auth::user()->id, "event_id" => $event_id, "status" => (($event->offline_auto_accept == true) ? 2 : 0), "payment_code" => $payment_code, "offline_status" => $is_Offline]);
+            }
         }
 
         // Send Email for Payment
@@ -573,8 +626,15 @@ class EventController extends Controller
         $email_template['message'] = 'Thank you for registering to ' . $event_title . '.';
         $email_template['email'] = $leader->email;
 
-        if ($event->price == 0 && $event->auto_accept == true) {
+        if ($event->price == 0 && $is_Offline == 0 && $event->auto_accept == true) {
             $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
+            if (strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
+        } else if ($event->offline_Price == 0 && $is_Offline == 1 && $event->offline_auto_accept == true) {
+            $d = encrypt($user->id . '~' . date("Y-m-d", strtotime($event->date)), env('Encrypt_Key'));
+            // Don't Forget to insert new key Encrypt_Key for the encrypting token 
+
+            $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
+            $email_template['message'] .= PHP_EOL . PHP_EOL . 'Your QR Attendance' . PHP_EOL . PHP_EOL . '![Participant QR](https://chart.googleapis.com/chart?cht=qr&chl=|' . $d . '|&choe=UTF-8&chs=250x250)' . PHP_EOL . PHP_EOL;
             if (strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
         } else {
             $email_template['message'] .= ' Please finish your payment (if any) and wait while our team verifies and approves your registration.' . PHP_EOL . PHP_EOL . 'You may check your ticket status regularly on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
@@ -584,7 +644,7 @@ class EventController extends Controller
         DB::table('email_queue')->insert($email_template);
 
         // Return Response
-        if ($event->price > 0) {
+        if (($event->price > 0 && $is_Offline == 0) || ($event->offline_Price > 0 && $is_Offline == 1)) {
             if (strlen($event->payment_link) > 0) return redirect($this->getPaymentLink($event, (object) ['payment_code' => $payment_code]));
             else return redirect('/pay/' . $payment_code);
         }

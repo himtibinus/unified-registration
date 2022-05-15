@@ -160,7 +160,7 @@
                     <div class="form-group mb-4">
                         <label for="action-registration-status"><b>Open for New Registrations?</b> (Current:
                             {{ $event->opened ? 'Yes' : 'No' }})</label><br>
-                        <select name="action-registration-status" id="action-registration-status"
+                        <select class="form-select" name="action-registration-status" id="action-registration-status"
                             @if (!$role->admin) disabled @endif>
                             <option value="-1">Unchanged</option>
                             <option value="enabled">Yes</option>
@@ -170,7 +170,7 @@
                     <div class="form-group mb-4">
                         <label for="action-registration-private"><b>Event Visibility</b> (Current:
                             {{ $event->private ? 'Private' : 'Public' }})</label><br>
-                        <select name="action-registration-private" id="action-registration-private"
+                        <select class="form-select" name="action-registration-private" id="action-registration-private"
                             @if (!$role->admin) disabled @endif>
                             <option value="-1">Unchanged</option>
                             <option value="private">Private</option>
@@ -180,8 +180,8 @@
                     <div class="form-group mb-4">
                         <label for="action-registration-auto_accept"><b>Automatically accept new participants?</b> (Current:
                             {{ $event->auto_accept ? 'Yes' : 'No' }})</label><br>
-                        <select name="action-registration-auto_accept" id="action-registration-auto_accept"
-                            @if (!$role->admin) disabled @endif>
+                        <select class="form-select" name="action-registration-auto_accept"
+                            id="action-registration-auto_accept" @if (!$role->admin) disabled @endif>
                             <option value="-1">Unchanged</option>
                             <option value="enabled">Yes</option>
                             <option value="disabled">No</option>
@@ -190,7 +190,7 @@
                     <div class="form-group mb-4">
                         <label for="action-registration-event_offline_status"><b>Is event open for offline?</b> (Current:
                             {{ $event->event_offline_status ? 'Yes' : 'No' }})</label><br>
-                        <select name="action-registration-event_offline_status"
+                        <select class="form-select" name="action-registration-event_offline_status"
                             id="action-registration-event_offline_status"
                             @if (!$role->admin) disabled @endif>
                             <option value="-1">Unchanged</option>
@@ -244,7 +244,7 @@
                     <div class="form-group mb-4">
                         <label for="action-attendance-status"><b>Open for Attendance?</b> (Current:
                             {{ $event->attendance_opened ? 'Yes' : 'No' }})</label><br>
-                        <select name="action-attendance-status" id="action-attendance-status"
+                        <select class="form-select" name="action-attendance-status" id="action-attendance-status"
                             @if (!$role->admin) disabled @endif>
                             <option value="-1">Unchanged</option>
                             <option value="enabled">Yes</option>
@@ -254,7 +254,7 @@
                     <div class="form-group mb-4">
                         <label for="action-attendance-type"><b>Attendance Type</b> (Current:
                             {{ $event->attendance_is_exit ? 'Exit' : 'Entrance' }})</label><br>
-                        <select name="action-attendance-type" id="action-attendance-type"
+                        <select class="form-select" name="action-attendance-type" id="action-attendance-type"
                             @if (!$role->admin) disabled @endif>
                             <option value="-1">Unchanged</option>
                             <option value="entrance">Entrance</option>
@@ -370,7 +370,8 @@
                                 </button>
                             </div>
                             <div class="btn-group mr-2" role="group">
-                                <select name="status-{{ $registration->id }}" id="status-{{ $registration->id }}">
+                                <select class="form-select" name="status-{{ $registration->id }}"
+                                    id="status-{{ $registration->id }}">
                                     <option value="-1">Override Status to...</option>
                                     <option value="0">0: Not yet accepted</option>
                                     <option value="1">1: Rejected</option>
@@ -381,7 +382,7 @@
                                 </select>
                             </div>
                             <div class="btn-group mr-2" role="group">
-                                <select name="status-offline-{{ $registration->id }}"
+                                <select class="form-select" name="status-offline-{{ $registration->id }}"
                                     id="status-offline-{{ $registration->id }}">
                                     <option value="-1">Override Offline Status</option>
                                     <option value="0">0: Online</option>
