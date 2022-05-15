@@ -253,6 +253,9 @@ class EventController extends Controller
                 case "action-update-price":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['price' => $value]);
                     break;
+                case "action-update-offline_price":
+                    if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['offline_price' => $value]);
+                    break;
                 case "action-update-cover_image":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['cover_image' => $value]);
                     break;
@@ -282,6 +285,10 @@ class EventController extends Controller
                 case "action-registration-auto_accept":
                     if ($value == "enabled") DB::table('events')->where('id', $id)->update(['auto_accept' => 1]);
                     else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['auto_accept' => 0]);
+                    break;
+                case "action-registration-offline_auto_accept":
+                    if ($value == "enabled") DB::table('events')->where('id', $id)->update(['offline_auto_accept' => 1]);
+                    else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['offline_auto_accept' => 0]);
                     break;
                 case "action-registration-event_offline_status":
                     if ($value == "enabled") DB::table('events')->where('id', $id)->update(['event_offline_status' => 1]);
@@ -629,7 +636,7 @@ class EventController extends Controller
         if ($event->price == 0 && $is_Offline == 0 && $event->auto_accept == true) {
             $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
             if (strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
-        } else if ($event->offline_Price == 0 && $is_Offline == 1 && $event->offline_auto_accept == true) {
+        } else if ($event->offline_price == 0 && $is_Offline == 1 && $event->offline_auto_accept == true) {
             $d = encrypt($user->id . '~' . date("Y-m-d", strtotime($event->date)), env('Encrypt_Key'));
             // Don't Forget to insert new key Encrypt_Key for the encrypting token 
 
@@ -644,7 +651,7 @@ class EventController extends Controller
         DB::table('email_queue')->insert($email_template);
 
         // Return Response
-        if (($event->price > 0 && $is_Offline == 0) || ($event->offline_Price > 0 && $is_Offline == 1)) {
+        if (($event->price > 0 && $is_Offline == 0) || ($event->offline_price > 0 && $is_Offline == 1)) {
             if (strlen($event->payment_link) > 0) return redirect($this->getPaymentLink($event, (object) ['payment_code' => $payment_code]));
             else return redirect('/pay/' . $payment_code);
         }

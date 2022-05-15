@@ -393,7 +393,7 @@
                                                     <div class="form-check mb-3">
                                                         <input class="form-check-input" type="radio"
                                                             name="OnlineOfflineStatus" id="OnlineOfflineStatus2" value="1"
-                                                            onchange="OnChangePrice('{{ $event->offline_Price }}')" />
+                                                            onchange="OnChangePrice('{{ $event->offline_price }}')" />
                                                         <label class="form-check-label" for="OnlineOfflineStatus2">
                                                             Offline
                                                         </label>

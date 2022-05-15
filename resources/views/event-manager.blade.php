@@ -91,6 +91,13 @@
                             @if (!$role->admin) disabled @else required @endif>
                     </div>
                     <div class="form-group mb-4">
+                        <label for="action-update-offline_price">Event Offline Price (Rp)<b
+                                class="text-danger">*</b></label>
+                        <input name="action-update-offline_price" id="action-update-offline_price" type="number" min="0"
+                            value="{{ $event->offline_price }}" class="form-control"
+                            @if (!$role->admin) disabled @else required @endif>
+                    </div>
+                    <div class="form-group mb-4">
                         <label for="action-update-cover_image">{{ __('Cover Image (URL)') }}</label>
                         <input name="action-update-cover_image" id="action-update-cover_image" type="text"
                             value="{{ $event->cover_image }}" class="form-control"
@@ -178,10 +185,24 @@
                         </select>
                     </div>
                     <div class="form-group mb-4">
-                        <label for="action-registration-auto_accept"><b>Automatically accept new participants?</b> (Current:
+                        <label for="action-registration-auto_accept"><b>Automatically accept new Online participants?</b>
+                            (Current:
                             {{ $event->auto_accept ? 'Yes' : 'No' }})</label><br>
                         <select class="form-select" name="action-registration-auto_accept"
                             id="action-registration-auto_accept" @if (!$role->admin) disabled @endif>
+                            <option value="-1">Unchanged</option>
+                            <option value="enabled">Yes</option>
+                            <option value="disabled">No</option>
+                        </select>
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="action-registration-offline_auto_accept"><b>Automatically accept new Offline
+                                participants?</b>
+                            (Current:
+                            {{ $event->offline_auto_accept ? 'Yes' : 'No' }})</label><br>
+                        <select class="form-select" name="action-registration-offline_auto_accept"
+                            id="action-registration-offline_auto_accept"
+                            @if (!$role->admin) disabled @endif>
                             <option value="-1">Unchanged</option>
                             <option value="enabled">Yes</option>
                             <option value="disabled">No</option>
