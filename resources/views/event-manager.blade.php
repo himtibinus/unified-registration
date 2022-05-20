@@ -297,6 +297,16 @@
                             value="{{ $event->totp_key }}" class="form-control"
                             @if (!$role->admin) disabled @endif>
                     </div>
+                    <div class="form-group mb-4">
+                        <label for="action-update-PassEvent"><b>Pass Event?</b> (Current:
+                            {{ $event->PassEvent ? 'Yes' : 'No' }})</label><br>
+                        <select class="form-select" name="action-update-PassEvent" id="action-update-PassEvent"
+                            @if (!$role->admin) disabled @endif>
+                            <option value="-1">Unchanged</option>
+                            <option value="enabled">Yes</option>
+                            <option value="disabled">No</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             @if ($role->admin == true)

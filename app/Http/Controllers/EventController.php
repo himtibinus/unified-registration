@@ -326,6 +326,10 @@ class EventController extends Controller
                 case "action-update-totp_key":
                     if ($force_change || $value != '') DB::table('events')->where('id', $id)->update(['totp_key' => $value]);
                     break;
+                case "action-update-PassEvent":
+                    if ($value == "enabled") DB::table('events')->where('id', $id)->update(['PassEvent' => 1]);
+                    else if ($value == "disabled") DB::table('events')->where('id', $id)->update(['PassEvent' => 0]);
+                    break;
             }
             // Clear cache
             Cache::forget('availableEvents');
@@ -637,7 +641,7 @@ class EventController extends Controller
             $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
             if (strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
         } else if ($event->offline_price == 0 && $is_Offline == 1 && $event->offline_auto_accept == true) {
-            $d = encrypt($user->id . '~' . date("Y-m-d", strtotime($event->date)), env('Encrypt_Key'));
+            $d = encrypt($user->id . '~' . $event_id . '~' . date("Y-m-d", strtotime($event->date)), env('Encrypt_Key'));
             // Don't Forget to insert new key Encrypt_Key for the encrypting token 
 
             $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
