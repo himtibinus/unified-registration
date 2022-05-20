@@ -641,9 +641,8 @@ class EventController extends Controller
             $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
             if (strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
         } else if ($event->offline_price == 0 && $is_Offline == 1 && $event->offline_auto_accept == true) {
-            $d = encrypt($user->id . '~' . $event_id . '~' . date("Y-m-d", strtotime($event->date)), env('Encrypt_Key'));
+            $d = $this->encrypt($user->id . '~' . $event_id . '~' . date("Y-m-d", strtotime($event->date)), env('Encrypt_Key'));
             // Don't Forget to insert new key Encrypt_Key for the encrypting token 
-
             $email_template['message'] .= ' Your registration has been approved by our team.' . PHP_EOL . PHP_EOL . 'Your ticket and team (if any) details can be found on https://registration.himti.or.id/events/' . $event->id . '/.' . PHP_EOL . PHP_EOL . 'If you are being registered by mistake, please contact the respective event committees.';
             $email_template['message'] .= PHP_EOL . PHP_EOL . 'Your QR Attendance' . PHP_EOL . PHP_EOL . '![Participant QR](https://chart.googleapis.com/chart?cht=qr&chl=|' . $d . '|&choe=UTF-8&chs=250x250)' . PHP_EOL . PHP_EOL;
             if (strlen($event->description_private) > 0) $email_template['message'] .= PHP_EOL . PHP_EOL . '## Important Information for Event/Attendance' . PHP_EOL . PHP_EOL . $event->description_private;
