@@ -12706,7 +12706,7 @@ textarea.form-control-lg {
 }
 
 nav {
-  background-color: rgb(4, 38, 140, 0.75) !important;
+  background-color: rgb(65, 91, 168) !important;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }

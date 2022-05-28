@@ -395,7 +395,7 @@
                                                             name="OnlineOfflineStatus" id="OnlineOfflineStatus2" value="1"
                                                             onchange="OnChangePrice('{{ $event->offline_price }}')" />
                                                         <label class="form-check-label" for="OnlineOfflineStatus2">
-                                                            Offline
+                                                            Onsite
                                                         </label>
                                                     </div>
                                                 @endif
@@ -786,7 +786,6 @@
                 document.getElementById("checkInModalLink").textContent = response.url;
                 document.getElementById("checkInTimestamp").textContent = response.timestamp;
                 document.getElementById("checkInConfirm").setAttribute('href', response.url);
-
                 qrcode.clear();
                 qrcode.makeCode(response.url);
 

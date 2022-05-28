@@ -479,7 +479,7 @@ class EventController extends Controller
             return redirect('/home');
         } else if ($event->team_members + $event->team_members_reserve > 0) $team_required = true;
 
-        if ($event->price > 0) $payment_code = uniqid();
+        if ($event->price > 0 || $event->offline_price > 0)     $payment_code = uniqid();
         $is_Offline = 0;
         if ($event->event_offline_status == 1 && !$request->has("OnlineOfflineStatus")) {
             return back()->with('OfflineInput', 'True');
