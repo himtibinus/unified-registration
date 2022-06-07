@@ -193,6 +193,15 @@
                                         </a>
                                     </div>
                                 </div>
+                            @elseif ($registration->status == 0 && strlen($event->payment_link) > 0)
+                                <div class="btn-toolbar" role="toolbar">
+                                    <div class="btn-group mr-2" role="group">
+                                        <a class="btn btn-primary text-white"
+                                            href="{{ App\Http\Controllers\EventController::getPaymentLink($event, $registration) }}">
+                                            <i class="bi bi-credit-card"></i> Submit Form
+                                        </a>
+                                    </div>
+                                </div>
                             @else
                                 @if ($event->event_offline_status == 1 && $registration->offline_status == 1)
                                     <div class="btn-toolbar" role="toolbar">
@@ -303,7 +312,7 @@
                                 <b>Remarks: </b> {{ $registration->remarks }}
                             @endif
                         </p>
-                        @if ($registration->status == 1 && strlen($registration->payment_code) > 0)
+                        @if ($registration->status == 0 && strlen($registration->payment_code) > 0)
                             <div class="btn-toolbar" role="toolbar">
                                 <div class="btn-group mr-2" role="group">
                                     @if (strlen($event->payment_link) > 0)
@@ -314,6 +323,15 @@
                                                 href="/pay/{{ $registration->payment_code }}">
                                     @endif
                                     <i class="bi bi-credit-card"></i> Pay
+                                    </a>
+                                </div>
+                            </div>
+                        @elseif ($registration->status == 0 && strlen($event->payment_link) > 0)
+                            <div class="btn-toolbar" role="toolbar">
+                                <div class="btn-group mr-2" role="group">
+                                    <a class="btn btn-primary text-white"
+                                        href="{{ App\Http\Controllers\EventController::getPaymentLink($event, $registration) }}">
+                                        <i class="bi bi-credit-card"></i> Submit Form
                                     </a>
                                 </div>
                             </div>
@@ -403,6 +421,9 @@
                                             @if ($event->price > 0)
                                                 <p class="text text-danger fw-bold">You will be redirected to our
                                                     payment
+                                                    form.</p>
+                                            @elseif (strlen($event->payment_link) > 0)
+                                                <p class="text text-danger fw-bold">You will be redirected to our
                                                     form.</p>
                                             @endif
                                             <p class="text mb-4 fw-bold">By registering to this event, you agree to our

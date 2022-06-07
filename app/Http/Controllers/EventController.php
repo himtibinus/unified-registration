@@ -658,6 +658,7 @@ class EventController extends Controller
             if (strlen($event->payment_link) > 0) return redirect($this->getPaymentLink($event, (object) ['payment_code' => $payment_code]));
             else return redirect('/pay/' . $payment_code);
         }
+        if (strlen($event->payment_link) > 0) return redirect($this->getPaymentLink($event, (object) ['payment_code' => $payment_code]));
         return redirect('/events/' . $event_id);
     }
 
