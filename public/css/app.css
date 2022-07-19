@@ -12740,3 +12740,7 @@ main {
     font-size: 16px;
   }
 }
+.dewaweb {
+  background-color: rgb(255, 255, 255) !important;
+  box-shadow: 0 0.5rem 0.5rem rgba(0, 0, 0, 0.08) !important;
+}

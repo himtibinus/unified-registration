@@ -68,7 +68,8 @@
 
                                     <form id="logout-form" action="https://testing.himti.or.id/logout" method="POST"
                                         class="d-none">
-                                        <input type="hidden" name="_token" value="p8QEcoj1U8jpS7kLeX8R87Y12LYjPQLIXChCWtgQ">
+                                        <input type="hidden" name="_token"
+                                            value="p8QEcoj1U8jpS7kLeX8R87Y12LYjPQLIXChCWtgQ">
                                     </form>
                                 </li>
                             @endif
@@ -84,14 +85,14 @@
                                     <a class="dropdown-item" href="/profile">
                                         <i class="bi bi-person-circle"></i> Profile
                                     </a>
-                                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
+                                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                        onclick="event.preventDefault();
                                                              document.getElementById('logout-form').submit();">
                                         <i class="bi bi-box-arrow-right"></i>
                                         {{ __('Logout') }}
                                     </a>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                        class="d-none">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>
                                 </div>
@@ -106,6 +107,17 @@
             @yield('content')
         </main>
         <footer class="container">
+            <div class="container">
+                <h3 class="text-center mb-4">POWERED BY</h3>
+                <div class="row-top">
+                    <div class="col col-7 mx-auto">
+                        <a href="https://www.dewaweb.com/" target="_blank" class="mx-auto">
+                            <img class="rounded mx-auto d-block dewaweb" src="assets/Dewaweb.png" alt=""
+                                width="40%">
+                        </a>
+                    </div>
+                </div>
+            </div>
             <hr>
             <p class="text-center">© 2021–2022 Research and Development, <a href="https://himti.or.id"
                     class="backlink-himti text-decoration-none">HIMTI BINUS University</a>.</p>
