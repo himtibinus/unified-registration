@@ -38,7 +38,7 @@
                                 @foreach($universities as $university)
                                     <option value="{{$university->id}}" {{ old('university_id') == $university->id ? 'selected' : '' }}>{{$university->name}}</option>
                                 @endforeach
-                                <option value="0" {{ old('university_id') == '0' ? 'selected' : '' }}>Others (Add a new one)</option>
+                                {{-- <option value="0" {{ old('university_id') == '0' ? 'selected' : '' }}>Others (Add a new one)</option> --}}
                             </select>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                         <b>For BINUSIAN participants:</b> Make sure to select <b>BINUS University</b> to be eligible for <a href="https://student.binus.ac.id/sat/" target="_blank">Student Activity Transcript (SAT)</a> points. Use <b>@binus.ac.id</b> email address whenever possible.
                     </div>
                     <div class="alert alert-warning" role="alert">
-                        <b>For PPTI BCA participants at TECHNO 2021:</b> Make sure to select <b>BINUS University</b> and select <b>PPTI BCA</b> as your campus location.
+                        <b>For PPTI BCA participants at TECHNO 2022:</b> Make sure to select <b>BINUS University</b> and select <b>PPTI BCA</b> as your campus location.
                     </div>
                     <div class="form-group row" id="nim-container">
                         <label for="nim" class="col-md-4 col-form-label text-md-right">{{ __('NIM') }}<b class="text-danger">*</b></label>
@@ -66,15 +66,16 @@
                             <select class="form-control" id="binus_regional" name="binus_regional">
                                 <option>None/Uncategorized</option>
                                 <option value="Alam Sutera">Alam Sutera</option>
-                                <option value="Bekasi">Bekasi</option>
-                                <option value="Kemanggisan">Kemanggisan (Anggrek, Syahdan, Kijang)</option>
-                                <option value="Senayan">Senayan (BINUS International)</option>
                                 <option value="Bandung">Bandung</option>
-                                <option value="Malang">Malang</option>
                                 <option value="BASE">BASE (BINUS ASO School of Engineering)</option>
+                                <option value="Bekasi">Bekasi</option>
                                 <option value="BNSD">BNSD (BINUS Northumbria School of Design)</option>
                                 <option value="BOL">BOL (BINUS Online Learning)</option>
+                                <option value="Kemanggisan">Kemanggisan (Anggrek, Syahdan, Kijang)</option>
+                                <option value="Malang">Malang</option>
                                 <option value="PPTI BCA">PPTI BCA</option>
+                                <option value="Semarang">Semarang</option>
+                                <option value="Senayan">Senayan (BINUS International)</option>
                             </select>
                         </div>
                     </div>
