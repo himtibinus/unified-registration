@@ -112,8 +112,8 @@
                 <div class="row-top">
                     <div class="col col-7 mx-auto">
                         <a href="https://www.dewaweb.com/" target="_blank" class="mx-auto">
-                            <img class="rounded mx-auto d-block dewaweb" src="assets/Dewaweb.png" alt=""
-                                width="25%">
+                            <img class="rounded mx-auto d-block dewaweb" src="{{ url('/assets/Dewaweb.png') }}"
+                                alt="" width="25%">
                         </a>
                     </div>
                 </div>
