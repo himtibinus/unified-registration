@@ -666,7 +666,20 @@ class EventController extends Controller
     {
         $search = array("%NAME", "%EMAIL", "%PAYMENT_CODE", "%EVENT_ID");
         $replace = array(Auth::user()->name, Auth::user()->email, $registration->payment_code, $event->id);
-        return str_replace($search, $replace, $event->payment_link);
+        $LinkEdited = str_replace($search, $replace, $event->payment_link);
+        $registrationsfields = DB::select("SELECT field_id FROM event_permissions WHERE event_id = '" . $event->id . "'");
+        $UserDetails = DB::select("SELECT * FROM user_properties WHERE user_id = '" . Auth::id() . "'");
+
+        foreach ($registrationsfields as $registration) {
+            foreach ($UserDetails as $UserDetail) {
+                if ($registration->field_id == $UserDetail->field_id) {
+                    $LinkEdited = str_replace("%".$registration->field_id, $UserDetail->value, $LinkEdited);
+                }
+            }
+        }
+
+
+        return $LinkEdited;
     }
 
     // Module to register attendance queue

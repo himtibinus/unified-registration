@@ -110,10 +110,10 @@
             <div class="container">
                 <h3 class="text-center mb-4">POWERED BY</h3>
                 <div class="row-top">
-                    <div class="col col-7 mx-auto">
-                        <a href="https://www.dewaweb.com/" target="_blank" class="mx-auto">
+                    <div class="mx-auto sizingHyper">
+                        <a href="https://www.dewaweb.com/" target="_blank">
                             <img class="rounded mx-auto d-block dewaweb" src="{{ url('/assets/Dewaweb.png') }}"
-                                alt="" width="25%">
+                                alt="" width="100%">
                         </a>
                     </div>
                 </div>
