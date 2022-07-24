@@ -671,10 +671,15 @@ class EventController extends Controller
         $UserDetails = DB::select("SELECT * FROM user_properties WHERE user_id = '" . Auth::id() . "'");
 
         foreach ($registrationsfields as $registration) {
+            $Full = 0;
             foreach ($UserDetails as $UserDetail) {
                 if ($registration->field_id == $UserDetail->field_id) {
-                    $LinkEdited = str_replace("%".$registration->field_id, $UserDetail->value, $LinkEdited);
+                    $LinkEdited = str_replace("%" . $registration->field_id, $UserDetail->value, $LinkEdited);
+                    $Full = 1;
                 }
+            }
+            if ($Full == 0) {
+                $LinkEdited = str_replace("%" . $registration->field_id, "", $LinkEdited);
             }
         }
 
