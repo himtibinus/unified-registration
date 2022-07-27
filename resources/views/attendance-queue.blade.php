@@ -29,8 +29,14 @@
         <nav class="navbar navbar-expand-md navbar-dark shadow-sm fixed-top w-100">
             <div class="container">
                 <a class="navbar-brand fw-bold" href="/">
-                    HIMTI Registration
+                    <div class="d-flex justify-content-between align-items-center">
+                        <img src="{{ url('./assets/himti-mono.png') }}" width="45px" alt="">
+                        <p class="d-none d-md-block app-title mb-0 ms-2 fw-bold">
+                            {{ config('app.name', 'Laravel') }}</p>
+                    </div>
                 </a>
+                <p class="app-mobile-title d-md-none app-title mb-0 mx-auto fw-bold text-white" style="padding-right: 56px">
+                    HIMTI Registration</p>
             </div>
         </nav>
 
@@ -81,6 +87,22 @@
                 </div>
             </div>
         </main>
+        <footer class="container mt-5">
+            <div class="container">
+                <h3 class="text-center mb-4">POWERED BY</h3>
+                <div class="row-top">
+                    <div class="mx-auto sizingHyper">
+                        <a href="https://www.dewaweb.com/" target="_blank">
+                            <img class="rounded mx-auto d-block dewaweb" src="{{ url('/assets/Dewaweb.png') }}"
+                                alt="" width="100%">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <p class="text-center">© 2021–2022 Research and Development, <a href="https://himti.or.id"
+                    class="backlink-himti text-decoration-none">HIMTI BINUS University</a>.</p>
+        </footer>
     </div>
     <script>
         function submitForm(){
