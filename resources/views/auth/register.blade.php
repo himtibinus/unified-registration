@@ -103,12 +103,13 @@
                             <div class="col-md-6">
                                 <select class="form-control" id="fyp_batch" name="fyp_batch">
                                     <option value="0">None</option>
-                                    <option value="1 (AAS, ABN, ABM, PPTI)">1 (AAS, ABN, ABM, PPTI)</option>
-                                    <option value="2 (BAS, BBN, ABB, BBM, ABK)">2 (BAS, BBN, ABB, BBM, ABK)</option>
-                                    <option value="3 (CAS, CBN, BBB, CBM, ASG, BBK)">3 (CAS, CBN, BBB, CBM, ASG, BBK)
+                                    <option value="1 (AAS, ABN, ABB, PPTI)">1 (AAS, ABN, ABB, PPTI)</option>
+                                    <option value="2 (BAS, BBN, BBB, ABM, ABK)">2 (BAS, BBN, BBB, ABM, ABK)</option>
+                                    <option value="3 (CAS, CBN, CBB, BBM, CBM, ASG, BBK)">3 (CAS, CBN, CBB, BBM, CBM, ASG, BBK)
                                     </option>
-                                    <option value="4 (DAS, DBN, CBB, BSG, CBK)">4 (DAS, DBN, CBB, BSG, CBK)</option>
+                                    <option value="4 (DAS, DBN, BSG, CBK)">4 (DAS, DBN, BSG, CBK)</option>
                                     <option value="5 (EAS, EBN, ASN)">5 (EAS, EBN, ASN)</option>
+                                    <option value="6 (FBN, FAS)">6 (FBN, FAS)</option>
                                 </select>
                             </div>
                         </div>
