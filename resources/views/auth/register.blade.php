@@ -109,7 +109,6 @@
                                     </option>
                                     <option value="4 (DAS, DBN, BSG, CBK)">4 (DAS, DBN, BSG, CBK)</option>
                                     <option value="5 (EAS, EBN, ASN)">5 (EAS, EBN, ASN)</option>
-                                    <option value="6 (FBN, FAS)">6 (FBN, FAS)</option>
                                 </select>
                             </div>
                         </div>
