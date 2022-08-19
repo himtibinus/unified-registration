@@ -41,8 +41,8 @@
                         <p>
                             {{ __('Before we can proceed with your registration, you have to be logged in with your ' . config('app.name', 'Laravel') . ' account.') }}</p>
                         <p>
-                            <a class="btn btn-primary" href="{{ route('register') }}">{{ __('Sign Up') }}</a>
-                            <a class="btn btn-primary" href="{{ route('login') }}">{{ __('Log In') }}</a>
+                            <a class="btn btn-primary" href="{{ route('register') }}">{{ __('Register') }}</a>
+                            <a class="btn btn-outline-primary" href="{{ route('login') }}">{{ __('Login') }}</a>
                         </p>
                     </div>
                 @elseif(count($registeredEvents) == 0)
