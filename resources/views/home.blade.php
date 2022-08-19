@@ -32,25 +32,31 @@
             @component('components.status-badge')
             @endcomponent
             <div class="col-md-10 col-lg-8">
-                <h1 class="mb-4">Your Events</h1>
                 @if (!Auth::check())
-                    <div class="card mb-4">
-                        <div class="card-header h4 bg-danger text-white">{{ __('You haven\'t logged in yet.') }}</div>
-                        <div class="card-body">
-                            <b>{{ __('First time here?') }}</b> {{ __('Please ') }}<a
-                                href="{{ route('register') }}">sign up</a>{{ __(' or ') }} <a
-                                href="{{ route('login') }}">login</a>{{ __(' to a ') . config('app.name', 'Laravel') . __(' account to join these events.') }}
-                        </div>
+                    <div class="text-center my-5">
+                        <img class="rounded mx-auto d-block mb-2" src="{{ url('/assets/undraw_amusement_park_17oe.svg') }}"
+                            alt="Illustration" style="width: 100%; max-width: 500px">
+                        <h3 class="display-3">
+                            {{ __('First time here?') }}</h3>
+                        <p>
+                            {{ __('Before we can proceed with your registration, you have to be logged in with your ' . config('app.name', 'Laravel') . ' account.') }}</p>
+                        <p>
+                            <a class="btn btn-primary" href="{{ route('register') }}">{{ __('Sign Up') }}</a>
+                            <a class="btn btn-primary" href="{{ route('login') }}">{{ __('Log In') }}</a>
+                        </p>
                     </div>
                 @elseif(count($registeredEvents) == 0)
-                    <div class="card mb-4">
-                        <div class="card-header h4 bg-danger text-white">
-                            {{ __('You currently haven\'t registered to any new events yet.') }}</div>
-                        <div class="card-body">
+                    <div class="text-center my-5">
+                        <img class="rounded mx-auto d-block mb-2" src="{{ url('/assets/undraw_amusement_park_17oe.svg') }}"
+                            alt="Illustration" style="width: 100%; max-width: 500px">
+                        <h3 class="display-3">
+                            {{ __('You currently haven\'t registered to any new events yet.') }}</h3>
+                        <p>
                             <b>{{ __('First time here?') }}</b> {{ __('Select one of the events below to register.') }}
-                        </div>
+                        </p>
                     </div>
                 @else
+                    <h1 class="mb-4">Your Events</h1>
                     @foreach ($registeredEvents as $event)
                         @component('components.event-card', ['event' => $event, 'type' => 'registeredEvents'])
                             ;
