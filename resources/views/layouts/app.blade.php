@@ -119,7 +119,7 @@
                 </div>
             </div>
             <hr>
-            <p class="text-center">© 2021–2023 Research and Development, <a href="https://himti.or.id"
+            <p class="text-center">© 2021–2022 Research and Development, <a href="https://himti.or.id"
                     class="backlink-himti text-decoration-none">HIMTI BINUS University</a>.</p>
         </footer>
     </div>
